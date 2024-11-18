@@ -1,0 +1,302 @@
+---
+title: Rust to JS Type Conversion
+description: This reference shows you how Anchor maps Rust types to JavaScript/TypeScript types in the client.
+---
+
+<table>
+<thead>
+  <tr>
+    <th>Type</th>
+    <th>Rust</th>
+    <th>TypeScript</th>
+    <th>Example</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>Boolean</td>
+    <td>
+
+```rust
+bool
+```
+
+   </td>
+    <td>
+
+```typescript
+boolean
+```
+
+   </td>
+    <td>
+
+```typescript
+true
+```
+
+   </td>
+  </tr>
+
+  <tr>
+    <td>Integer</td>
+    <td>
+
+```rust
+u8/u16/u32/i8/i16/i32
+```
+
+   </td>
+    <td>
+
+```typescript
+number
+```
+
+   </td>
+    <td>
+
+```typescript
+99
+```
+
+   </td>
+  </tr>
+
+  <tr>
+    <td>Big integer</td>
+    <td>
+
+```rust
+u64/u128/i64/i128
+```
+
+   </td>
+    <td>
+
+```typescript
+anchor.BN
+```
+
+   </td>
+    <td>
+
+```typescript
+new anchor.BN(99)
+```
+
+   </td>
+  </tr>
+
+  <tr>
+    <td>Float</td>
+    <td>
+
+```rust
+f32/f64
+```
+
+   </td>
+    <td>
+
+```typescript
+number
+```
+
+   </td>
+    <td>
+
+```typescript
+1.0
+```
+
+   </td>
+  </tr>
+
+  <tr>
+    <td>String</td>
+    <td>
+
+```rust
+String
+```
+
+   </td>
+    <td>
+
+```typescript
+string
+```
+
+   </td>
+    <td>
+
+```typescript
+'hello'
+```
+
+   </td>
+  </tr>
+
+  <tr>
+    <td>Array</td>
+    <td>
+
+```rust
+[T; N]
+```
+
+   </td>
+    <td>
+
+```typescript
+Array<T>
+```
+
+   </td>
+    <td>
+
+```typescript
+[1, 2, 3]
+```
+
+   </td>
+  </tr>
+
+  <tr>
+    <td>Vector</td>
+    <td>
+
+```rust
+Vec<T>
+```
+
+   </td>
+    <td>
+
+```typescript
+Array<T>
+```
+
+   </td>
+    <td>
+
+```typescript
+[1, 2, 3]
+```
+
+   </td>
+  </tr>
+
+  <tr>
+    <td>Option</td>
+    <td>
+
+```rust
+Option<T>
+```
+
+   </td>
+    <td>
+
+```typescript
+T | null | undefined
+```
+
+   </td>
+    <td>
+      None:
+
+```typescript
+null
+```
+
+      Some(val):
+
+```typescript
+42
+```
+
+   </td>
+  </tr>
+
+  <tr>
+    <td>Struct</td>
+    <td>
+
+```rust
+struct MyStruct {
+    val: u16,
+}
+```
+
+   </td>
+    <td>
+
+```typescript
+object
+```
+
+   </td>
+    <td>
+
+```typescript
+{
+  val: 99
+}
+```
+
+   </td>
+  </tr>
+
+  <tr>
+    <td>Enum</td>
+    <td>
+
+```rust
+enum MyEnum {
+    One,
+    Two { val: u32 },
+    Three(u8, i16),
+}
+```
+
+   </td>
+    <td>
+
+```typescript
+object
+```
+
+   </td>
+    <td>
+      Unit variant:
+
+```typescript
+{
+  one: {}
+}
+```
+
+      Named variant:
+
+```typescript
+{
+  two: {
+    val: 99
+  }
+}
+```
+
+      Unnamed (tuple) variant:
+
+```typescript
+{
+  three: [12, -34]
+}
+```
+
+   </td>
+  </tr>
+</tbody>
+</table>
