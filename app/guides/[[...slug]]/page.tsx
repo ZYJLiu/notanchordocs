@@ -1,19 +1,18 @@
-import { guidesSource } from "@/app/source";
-import type { Metadata } from "next";
+import { guidesSource } from '@/app/source';
+import type { Metadata } from 'next';
 import {
   DocsPage,
   DocsBody,
   DocsDescription,
   DocsTitle,
-} from "fumadocs-ui/page";
-import { notFound } from "next/navigation";
-import defaultMdxComponents from "fumadocs-ui/mdx";
+} from 'fumadocs-ui/page';
+import { notFound } from 'next/navigation';
+import defaultMdxComponents from 'fumadocs-ui/mdx';
 
-export default async function Page({
-  params,
-}: {
-  params: { slug?: string[] };
+export default async function Page(props: {
+  params: Promise<{ slug?: string[] }>;
 }) {
+  const params = await props.params;
   const page = guidesSource.getPage(params.slug);
   if (!page) notFound();
 
@@ -34,7 +33,10 @@ export async function generateStaticParams() {
   return guidesSource.generateParams();
 }
 
-export function generateMetadata({ params }: { params: { slug?: string[] } }) {
+export async function generateMetadata(props: {
+  params: Promise<{ slug?: string[] }>;
+}) {
+  const params = await props.params;
   const page = guidesSource.getPage(params.slug);
   if (!page) notFound();
 
