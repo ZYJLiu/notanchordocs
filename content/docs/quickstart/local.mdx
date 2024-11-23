@@ -335,45 +335,53 @@ new program.
 
 Below is an overview of default file structure in an Anchor workspace:
 
-```
-.
-├── .anchor
-│   └── program-logs
-├── app
-├── migrations
-├── programs
-│   └── [project-name]
-│       └── src
-│           ├── lib.rs
-│           ├── Cargo.toml
-│           └── Xargo.toml
-├── target
-│   ├── deploy
-│   │   └── [project-name]-keypair.json
-│   ├── idl
-│   │   └── [project-name].json
-│   └── types
-│       └── [project-name].ts
-├── tests
-│   └── [project-name].ts
-├── Anchor.toml
-├── Cargo.toml
-└── package.json
-```
+<Files>
+  <Folder name=".anchor">
+    <File name="program-logs" />
+  </Folder>
+  <Folder name="app" />
+  <Folder name="migrations" />
+  <Folder name="programs" defaultOpen={true}>
+    <Folder name="[project-name]" defaultOpen={true}>
+      <Folder name="src" defaultOpen={true}>
+        <File name="lib.rs" />
+        <File name="Cargo.toml" />
+        <File name="Xargo.toml" />
+      </Folder>
+    </Folder>
+  </Folder>
+  <Folder name="target" defaultOpen={true}>
+    <Folder name="deploy">
+      <File name="[project-name]-keypair.json" />
+    </Folder>
+    <Folder name="idl">
+      <File name="[project-name].json" />
+    </Folder>
+    <Folder name="types">
+      <File name="[project-name].ts" />
+    </Folder>
+  </Folder>
+  <Folder name="tests" defaultOpen={true}>
+    <File name="[project-name].ts" />
+  </Folder>
+  <File name="Anchor.toml" />
+  <File name="Cargo.toml" />
+  <File name="package.json" />
+</Files>
 
 ### Programs Folder
 
-The `/programs` folder contains your project's Anchor programs. A single
+The `/programs` directory contains your project's Anchor programs. A single
 workspace can contain multiple programs.
 
 ### Tests Folder
 
-The `/tests` folder contains test files for your project. A default test file is
-created for you when you create your project.
+The `/tests` directory contains test files for your project. A default test file
+is created for you when you create your project.
 
 ### Target Folder
 
-The `/target` folder contains build outputs. The main subfolders include:
+The `/target` directory contains build outputs. The main subfolders include:
 
 - `/deploy`: Contains the keypair and program binary for your programs.
 - `/idl`: Contains the JSON IDL for your programs.

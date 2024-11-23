@@ -1,30 +1,22 @@
 {
   "title": "docs",
-  "root": true,
   "description": "The description of root folder",
   "pages": [
     "---Getting Started---",
-    "index",
     "installation",
     "quickstart",
+
     "---Core Concepts---",
-    "program-structure",
-    "idl",
-    "client",
-    "pda",
-    "cpi",
+    "basics",
+    "clients",
+    "features",
+
+    "---SPL Tokens---",
+    "tokens",
+
     "---References---",
-    "examples",
-    "account-types",
-    "account-constraints",
-    "anchor-toml",
-    "cli",
-    "avm",
-    "space",
-    "type-conversion",
-    "---Project Updates---",
-    "release-notes",
-    "changelog",
+    "references",
+    "updates",
     "contribution"
   ]
 }

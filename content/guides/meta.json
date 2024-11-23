@@ -1,5 +1,6 @@
 {
   "title": "Guides",
+  "root": true,
   "description": "The description of root folder",
   "pages": ["---Getting Started---", "index", "placeholder"]
 }

@@ -13,6 +13,7 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Callout } from 'fumadocs-ui/components/callout';
 import { TypeTable } from 'fumadocs-ui/components/type-table';
+import { Files, Folder, File } from 'fumadocs-ui/components/files';
 import GithubIcon from '@/public/icons/github.svg';
 
 export default async function Page(props: {
@@ -45,6 +46,9 @@ export default async function Page(props: {
             Tabs,
             Callout,
             TypeTable,
+            Files,
+            Folder,
+            File,
           }}
         />
       </DocsBody>

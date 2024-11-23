@@ -32,7 +32,7 @@ const SharedRootToggle = () => (
 export const baseOptions: HomeLayoutProps = {
   nav: {
     title: (
-      <div className="flex items-center gap-2 pl-3">
+      <div className="flex items-center gap-2 pl-2">
         <Image src="/icons/anchor.png" alt="Logo" width={24} height={24} />
         <span>Anchor Docs</span>
       </div>
@@ -79,12 +79,7 @@ export const baseOptions: HomeLayoutProps = {
 const commonLayoutConfig = {
   ...baseOptions,
   sidebar: {
-    defaultOpenLevel: 0,
     banner: <SharedRootToggle />,
-  },
-
-  containerProps: {
-    className: '[&_article]:max-w-[1000px]',
   },
 };
 
