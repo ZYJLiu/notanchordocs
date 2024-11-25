@@ -4,6 +4,7 @@ import {
   DocsBody,
   DocsDescription,
   DocsTitle,
+  DocsCategory,
 } from 'fumadocs-ui/page';
 import { notFound } from 'next/navigation';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
@@ -51,6 +52,7 @@ export default async function Page(props: {
             File,
           }}
         />
+        {page.data.index ? <DocsCategory page={page} from={source} /> : null}
       </DocsBody>
     </DocsPage>
   );

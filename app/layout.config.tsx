@@ -80,6 +80,7 @@ const commonLayoutConfig = {
   ...baseOptions,
   sidebar: {
     banner: <SharedRootToggle />,
+    defaultOpenLevel: 1,
   },
 };
 

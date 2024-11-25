@@ -1,6 +1,18 @@
-import { defineDocs, defineConfig } from 'fumadocs-mdx/config';
+import {
+  defineDocs,
+  defineConfig,
+  frontmatterSchema,
+} from 'fumadocs-mdx/config';
+import { z } from 'zod';
 
-export const { docs, meta } = defineDocs();
+// default dir content/docs
+export const { docs, meta } = defineDocs({
+  docs: {
+    schema: frontmatterSchema.extend({
+      index: z.boolean().default(false),
+    }),
+  },
+});
 
 export const { docs: tutorialsDocs, meta: tutorialsMeta } = defineDocs({
   docs: { dir: 'content/tutorials' },
