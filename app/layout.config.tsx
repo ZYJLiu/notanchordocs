@@ -1,17 +1,17 @@
-import { type DocsLayoutProps } from 'fumadocs-ui/layouts/notebook';
-import { type HomeLayoutProps } from 'fumadocs-ui/layouts/home';
-import { RootToggle } from 'fumadocs-ui/components/layout/root-toggle';
-import { subcategories } from './subcategories';
-import { docsSource, tutorialsSource, guidesSource } from './source';
-import StackExchangeIcon from '@/public/icons/stackexchange.svg';
-import GithubIcon from '@/public/icons/github.svg';
-import DiscordIcon from '@/public/icons/discord.svg';
-import Image from 'next/image';
+import { type DocsLayoutProps } from "fumadocs-ui/layouts/notebook";
+import { type HomeLayoutProps } from "fumadocs-ui/layouts/home";
+import { RootToggle } from "fumadocs-ui/components/layout/root-toggle";
+import { subcategories } from "./subcategories";
+import { docsSource, tutorialsSource, guidesSource } from "./source";
+import StackExchangeIcon from "@/public/icons/stackexchange.svg";
+import GithubIcon from "@/public/icons/github.svg";
+import DiscordIcon from "@/public/icons/discord.svg";
+import Image from "next/image";
 
 // Shared RootToggle component
 const SharedRootToggle = () => (
   <RootToggle
-    options={subcategories.map((subcategory) => ({
+    options={subcategories.map(subcategory => ({
       url: `${subcategory.param}`,
       icon: (
         <subcategory.icon className="size-9 shrink-0 rounded-md bg-gradient-to-t from-fd-background/80 p-1.5" />
@@ -37,26 +37,26 @@ export const baseOptions: HomeLayoutProps = {
         <span>Anchor Docs</span>
       </div>
     ),
-    url: '/docs',
+    url: "/docs",
   },
   links: [
     {
       icon: <GithubIcon />,
-      text: 'Github',
-      url: 'https://github.com/coral-xyz/anchor',
-      active: 'none',
+      text: "Github",
+      url: "https://github.com/coral-xyz/anchor",
+      active: "none",
     },
     {
       icon: <DiscordIcon />,
-      text: 'Discord',
-      url: 'https://discord.com/invite/NHHGSXAnXk',
-      active: 'none',
+      text: "Discord",
+      url: "https://discord.com/invite/NHHGSXAnXk",
+      active: "none",
     },
     {
       icon: <StackExchangeIcon />,
-      text: 'Stack Exchange',
-      url: 'https://solana.stackexchange.com/',
-      active: 'none',
+      text: "Stack Exchange",
+      url: "https://solana.stackexchange.com/",
+      active: "none",
     },
     // {
     //   text: 'Documentation',
@@ -79,7 +79,7 @@ export const baseOptions: HomeLayoutProps = {
 const commonLayoutConfig = {
   ...baseOptions,
   sidebar: {
-    banner: <SharedRootToggle />,
+    // banner: <SharedRootToggle />,
     defaultOpenLevel: 1,
   },
 };

@@ -64,7 +64,7 @@ The `cpi.test.ts` file shows how to invoke the Anchor program's `sol_transfer`
 instruction and logs a link to the transaction details on SolanaFM.
 
 ```ts filename="cpi.test.ts"
-it('SOL Transfer Anchor', async () => {
+it("SOL Transfer Anchor", async () => {
   const transactionSignature = await program.methods
     .solTransfer(new BN(transferAmount))
     .accounts({
@@ -335,7 +335,7 @@ It shows how to derive the PDA using the seeds specified in the program:
 
 ```ts /pda/ /wallet.publicKey/
 const [PDA] = PublicKey.findProgramAddressSync(
-  [Buffer.from('pda'), wallet.publicKey.toBuffer()],
+  [Buffer.from("pda"), wallet.publicKey.toBuffer()],
   program.programId,
 );
 ```
@@ -344,7 +344,7 @@ The first step in this example is to fund the PDA account with a basic SOL
 transfer from the Playground wallet.
 
 ```ts filename="cpi.test.ts"
-it('Fund PDA with SOL', async () => {
+it("Fund PDA with SOL", async () => {
   const transferInstruction = SystemProgram.transfer({
     fromPubkey: wallet.publicKey,
     toPubkey: PDA,
@@ -371,7 +371,7 @@ instruction transfers SOL from the PDA account back to the `wallet` account via
 a CPI to the System Program, which is "signed" for by the program.
 
 ```ts
-it('SOL Transfer with PDA signer', async () => {
+it("SOL Transfer with PDA signer", async () => {
   const transactionSignature = await program.methods
     .solTransfer(new BN(transferAmount))
     .accounts({
@@ -424,7 +424,7 @@ The Javascript equivalent to derive the PDA is included in the test file.
 
 ```ts /pda/ /wallet.publicKey/
 const [PDA] = PublicKey.findProgramAddressSync(
-  [Buffer.from('pda'), wallet.publicKey.toBuffer()],
+  [Buffer.from("pda"), wallet.publicKey.toBuffer()],
   program.programId,
 );
 ```

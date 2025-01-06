@@ -1,0 +1,198 @@
+---
+title: Codama
+description: Placeholder
+---
+
+https://github.com/codama-idl/codama/tree/main
+
+## Generate SDKs
+
+```ts title="generate-client-script.ts"
+import { createFromRoot, updateProgramsVisitor } from "codama";
+import { AnchorIdl, rootNodeFromAnchor } from "@codama/nodes-from-anchor";
+import { renderVisitor as renderJavaScriptVisitor } from "@codama/renderers-js";
+import { renderVisitor as renderRustVisitor } from "@codama/renderers-rust";
+import anchorIdl from "./idl.json";
+
+const rootNode = rootNodeFromAnchor(anchorIdl as AnchorIdl);
+const codama = createFromRoot(rootNode);
+codama.update(
+  updateProgramsVisitor({
+    exampleProgram: { name: "example" },
+  }),
+);
+
+// Generate the client sdks at the given path
+codama.accept(renderJavaScriptVisitor("./codama-sdks/js/src/generated"));
+codama.accept(renderRustVisitor("./codama-sdks/rust/src/generated"));
+```
+
+## TypeScript
+
+Example using generated TypeScript SDKs with v2 of `@solana/web3.js`
+
+```ts title="example.ts"
+import {
+  airdropFactory,
+  appendTransactionMessageInstructions,
+  createSolanaRpc,
+  createSolanaRpcSubscriptions,
+  createTransactionMessage,
+  generateKeyPairSigner,
+  getSignatureFromTransaction,
+  lamports,
+  pipe,
+  sendAndConfirmTransactionFactory,
+  setTransactionMessageFeePayerSigner,
+  setTransactionMessageLifetimeUsingBlockhash,
+  signTransactionMessageWithSigners,
+} from "@solana/web3.js";
+import {
+  getInitializeInstruction,
+  getIncrementInstruction,
+  fetchCounter,
+} from "./codama-sdks/js/src/generated";
+
+// Create Connection, localhost in this example
+const rpc = createSolanaRpc("http://127.0.0.1:8899");
+const rpcSubscriptions = createSolanaRpcSubscriptions("ws://127.0.0.1:8900");
+
+// Generate keypairs for fee payer and counter account
+const feePayer = await generateKeyPairSigner();
+const counter = await generateKeyPairSigner();
+
+// Fund fee payer
+await airdropFactory({ rpc, rpcSubscriptions })({
+  recipientAddress: feePayer.address,
+  lamports: lamports(1_000_000_000n),
+  commitment: "confirmed",
+});
+
+const balance = await rpc.getBalance(feePayer.address).send();
+console.log(balance);
+
+const createInstruction = getInitializeInstruction({
+  payer: feePayer,
+  counter,
+});
+
+const incrementInstruction = getIncrementInstruction({
+  counter: counter.address,
+});
+
+// Order of instructions to add to transaction
+const instructions = [createInstruction, incrementInstruction];
+
+// Get latest blockhash to include in transaction
+const { value: latestBlockhash } = await rpc.getLatestBlockhash().send();
+
+// Create transaction message
+const transactionMessage = pipe(
+  createTransactionMessage({ version: 0 }), // Create transaction message
+  tx => setTransactionMessageFeePayerSigner(feePayer, tx), // Set fee payer
+  tx => setTransactionMessageLifetimeUsingBlockhash(latestBlockhash, tx), // Set transaction blockhash
+  tx => appendTransactionMessageInstructions(instructions, tx), // Append instructions
+);
+
+// Sign transaction message with required signers (fee payer and mint keypair)
+const signedTransaction =
+  await signTransactionMessageWithSigners(transactionMessage);
+
+// Send and confirm transaction
+await sendAndConfirmTransactionFactory({ rpc, rpcSubscriptions })(
+  signedTransaction,
+  { commitment: "confirmed" },
+);
+
+// Get transaction signature
+const transactionSignature = getSignatureFromTransaction(signedTransaction);
+console.log("Transaction Signature:", transactionSignature);
+
+// Fetch counter account
+const counterAccount = await fetchCounter(rpc, counter.address);
+console.log(counterAccount);
+```
+
+## Rust
+
+```rs title="main.rs"
+use codama_sdk::accounts::Counter;
+use codama_sdk::instructions::{IncrementBuilder, InitializeBuilder};
+use solana_client::rpc_client::RpcClient;
+use solana_sdk::{
+    commitment_config::CommitmentConfig, native_token::LAMPORTS_PER_SOL, signature::Keypair,
+    signer::Signer, system_program,
+};
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let connection = RpcClient::new_with_commitment(
+        "http://127.0.0.1:8899", // Local validator URL
+        CommitmentConfig::confirmed(),
+    );
+
+    let payer = Keypair::new();
+    let counter = Keypair::new();
+    println!("Generated Keypairs:");
+    println!("   Payer: {}", payer.pubkey());
+    println!("   Counter: {}", counter.pubkey());
+
+    println!("\nRequesting 1 SOL airdrop to payer");
+    let airdrop_signature = connection.request_airdrop(&payer.pubkey(), LAMPORTS_PER_SOL)?;
+
+    // Wait for airdrop confirmation
+    while !connection.confirm_transaction(&airdrop_signature)? {
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+    println!("   Airdrop confirmed!");
+
+    println!("\nSend transaction with initialize and increment instructions");
+    // Create initialize instruction
+    let initialize_ix = InitializeBuilder::new()
+        .payer(payer.pubkey())
+        .counter(counter.pubkey())
+        .system_program(system_program::ID)
+        .instruction();
+
+    // Create increment instruction
+    let increment_ix = IncrementBuilder::new()
+        .counter(counter.pubkey())
+        .instruction();
+
+    // Combine both instructions into a single transaction
+    let recent_blockhash = connection.get_latest_blockhash()?;
+    let transaction = solana_sdk::transaction::Transaction::new_signed_with_payer(
+        &[initialize_ix, increment_ix], // Both instructions in the same transaction
+        Some(&payer.pubkey()),
+        &[&payer, &counter], // All required signers
+        recent_blockhash,
+    );
+
+    let signature = connection.send_and_confirm_transaction(&transaction)?;
+    println!("   Transaction confirmed: {}", signature);
+
+    println!("\nFetch counter account data");
+    if let Ok(account_data) = connection.get_account_data(&counter.pubkey()) {
+        match Counter::from_bytes(&account_data) {
+            Ok(counter_account) => {
+                println!("   Counter value: {}", counter_account.count);
+            }
+            Err(err) => {
+                println!("   Failed to deserialize counter data: {}", err);
+            }
+        }
+    }
+    Ok(())
+}
+```
+
+```toml title="Cargo.toml"
+[dependencies]
+anyhow = "1.0.93"
+borsh = "^0.10"
+solana-client = "2.1.2"
+solana-program = "2.1.2"
+solana-sdk = "2.1.2"
+tokio = { version = "1.0", features = ["full"] }
+codama-sdk = { path = "../codama-sdk" }
+```

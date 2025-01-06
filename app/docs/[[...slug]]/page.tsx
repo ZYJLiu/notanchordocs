@@ -1,21 +1,21 @@
-import { docsSource as source } from '@/app/source';
+import { docsSource as source } from "@/app/source";
 import {
   DocsPage,
   DocsBody,
   DocsDescription,
   DocsTitle,
   DocsCategory,
-} from 'fumadocs-ui/page';
-import { notFound } from 'next/navigation';
-import defaultMdxComponents from 'fumadocs-ui/mdx';
-import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
-import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
-import { Step, Steps } from 'fumadocs-ui/components/steps';
-import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
-import { Callout } from 'fumadocs-ui/components/callout';
-import { TypeTable } from 'fumadocs-ui/components/type-table';
-import { Files, Folder, File } from 'fumadocs-ui/components/files';
-import GithubIcon from '@/public/icons/github.svg';
+} from "fumadocs-ui/page";
+import { notFound } from "next/navigation";
+import defaultMdxComponents from "fumadocs-ui/mdx";
+import { ImageZoom } from "fumadocs-ui/components/image-zoom";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+import { TypeTable } from "fumadocs-ui/components/type-table";
+import { Files, Folder, File } from "fumadocs-ui/components/files";
+import GithubIcon from "@/public/icons/github.svg";
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -38,7 +38,7 @@ export default async function Page(props: {
         <MDX
           components={{
             ...defaultMdxComponents,
-            img: (props) => <ImageZoom {...(props as any)} />,
+            img: props => <ImageZoom {...(props as any)} />,
             Accordion,
             Accordions,
             Step,
@@ -60,7 +60,7 @@ export default async function Page(props: {
 
 function EditOnGithub({ path }: { path: string }) {
   // placeholder
-  const href = `https://github.com/coral-xyz/anchor/blob/master/docs/${path.startsWith('/') ? path.slice(1) : path}`;
+  const href = `https://github.com/coral-xyz/anchor/blob/master/docs/${path.startsWith("/") ? path.slice(1) : path}`;
   return (
     <a
       href={href}

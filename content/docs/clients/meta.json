@@ -1,4 +1,4 @@
 {
   "title": "Client Libraries",
-  "pages": ["rust", "typescript"]
+  "pages": ["typescript", "rust", "codama"]
 }
