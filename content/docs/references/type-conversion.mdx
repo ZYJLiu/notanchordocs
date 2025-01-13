@@ -1,6 +1,6 @@
 ---
 title: Rust to JS Type Conversion
-description: This reference shows you how Anchor maps Rust types to JavaScript/TypeScript types in the client.
+description: Reference for how Anchor converts between Rust and TypeScript types
 ---
 
 <table>
@@ -25,14 +25,14 @@ bool
     <td>
 
 ```typescript
-boolean
+boolean;
 ```
 
    </td>
     <td>
 
 ```typescript
-true
+true;
 ```
 
    </td>
@@ -50,14 +50,14 @@ u8/u16/u32/i8/i16/i32
     <td>
 
 ```typescript
-number
+number;
 ```
 
    </td>
     <td>
 
 ```typescript
-99
+99;
 ```
 
    </td>
@@ -75,14 +75,14 @@ u64/u128/i64/i128
     <td>
 
 ```typescript
-anchor.BN
+anchor.BN;
 ```
 
    </td>
     <td>
 
 ```typescript
-new anchor.BN(99)
+new anchor.BN(99);
 ```
 
    </td>
@@ -100,14 +100,14 @@ f32/f64
     <td>
 
 ```typescript
-number
+number;
 ```
 
    </td>
     <td>
 
 ```typescript
-1.0
+1.0;
 ```
 
    </td>
@@ -125,14 +125,14 @@ String
     <td>
 
 ```typescript
-string
+string;
 ```
 
    </td>
     <td>
 
 ```typescript
-'hello'
+"hello";
 ```
 
    </td>
@@ -150,14 +150,14 @@ string
     <td>
 
 ```typescript
-Array<T>
+Array<T>;
 ```
 
    </td>
     <td>
 
 ```typescript
-[1, 2, 3]
+[1, 2, 3];
 ```
 
    </td>
@@ -175,14 +175,14 @@ Vec<T>
     <td>
 
 ```typescript
-Array<T>
+Array<T>;
 ```
 
    </td>
     <td>
 
 ```typescript
-[1, 2, 3]
+[1, 2, 3];
 ```
 
    </td>
@@ -200,7 +200,7 @@ Option<T>
     <td>
 
 ```typescript
-T | null | undefined
+T | null | undefined;
 ```
 
    </td>
@@ -208,13 +208,13 @@ T | null | undefined
       None:
 
 ```typescript
-null
+null;
 ```
 
       Some(val):
 
 ```typescript
-42
+42;
 ```
 
    </td>
@@ -234,7 +234,7 @@ struct MyStruct {
     <td>
 
 ```typescript
-object
+object;
 ```
 
    </td>
@@ -242,7 +242,7 @@ object
 
 ```typescript
 {
-  val: 99
+  val: 99;
 }
 ```
 
@@ -265,7 +265,7 @@ enum MyEnum {
     <td>
 
 ```typescript
-object
+object;
 ```
 
    </td>
@@ -274,7 +274,8 @@ object
 
 ```typescript
 {
-  one: {}
+  one: {
+  }
 }
 ```
 
@@ -283,7 +284,7 @@ object
 ```typescript
 {
   two: {
-    val: 99
+    val: 99;
   }
 }
 ```
@@ -292,7 +293,7 @@ object
 
 ```typescript
 {
-  three: [12, -34]
+  three: [12, -34];
 }
 ```
 

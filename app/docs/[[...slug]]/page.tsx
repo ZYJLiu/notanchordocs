@@ -28,7 +28,8 @@ export default async function Page(props: {
 
   return (
     <DocsPage
-      toc={page.data.toc}
+      // Filter the toc to only include h1, h2, and h3
+      toc={page.data.toc.filter(item => item.depth <= 3)}
       full={page.data.full}
       tableOfContent={{ footer: <EditOnGithub path={page.file.path} /> }}
     >

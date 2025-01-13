@@ -1,26 +1,10 @@
 import { type DocsLayoutProps } from "fumadocs-ui/layouts/notebook";
 import { type HomeLayoutProps } from "fumadocs-ui/layouts/home";
-import { RootToggle } from "fumadocs-ui/components/layout/root-toggle";
-import { subcategories } from "./subcategories";
-import { docsSource, tutorialsSource, guidesSource } from "./source";
+import { docsSource } from "./source";
 import StackExchangeIcon from "@/public/icons/stackexchange.svg";
 import GithubIcon from "@/public/icons/github.svg";
 import DiscordIcon from "@/public/icons/discord.svg";
 import Image from "next/image";
-
-// Shared RootToggle component
-const SharedRootToggle = () => (
-  <RootToggle
-    options={subcategories.map(subcategory => ({
-      url: `${subcategory.param}`,
-      icon: (
-        <subcategory.icon className="size-9 shrink-0 rounded-md bg-gradient-to-t from-fd-background/80 p-1.5" />
-      ),
-      title: subcategory.name,
-      description: subcategory.description,
-    }))}
-  />
-);
 
 /**
  * Shared layout configurations
@@ -58,46 +42,13 @@ export const baseOptions: HomeLayoutProps = {
       url: "https://solana.stackexchange.com/",
       active: "none",
     },
-    // {
-    //   text: 'Documentation',
-    //   url: '/docs',
-    //   active: 'nested-url',
-    // },
-    // {
-    //   text: 'Tutorials',
-    //   url: '/tutorials',
-    //   active: 'nested-url',
-    // },
-    // {
-    //   text: 'Guides',
-    //   url: '/guides',
-    //   active: 'nested-url',
-    // },
   ],
 };
 
-const commonLayoutConfig = {
+export const docsOptions: DocsLayoutProps = {
   ...baseOptions,
   sidebar: {
-    // banner: <SharedRootToggle />,
     defaultOpenLevel: 1,
   },
-};
-
-// Docs layout configuration
-export const docsOptions: DocsLayoutProps = {
-  ...commonLayoutConfig,
   tree: docsSource.pageTree,
-};
-
-// Tutorials layout configuration
-export const tutorialsOptions: DocsLayoutProps = {
-  ...commonLayoutConfig,
-  tree: tutorialsSource.pageTree,
-};
-
-// Guides layout configuration
-export const guidesOptions: DocsLayoutProps = {
-  ...commonLayoutConfig,
-  tree: guidesSource.pageTree,
 };

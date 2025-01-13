@@ -5,9 +5,10 @@ description:
   purpose, benefits, and how it simplifies program-client interactions
 ---
 
-An Interface Description Language (IDL) file provides a standardized JSON file
-describing the program's instructions and accounts. This file simplifies the
-process of integrating your on-chain program with client applications.
+An Interface Description Language (IDL) file for an Anchor program provides a
+standardized JSON file describing the program's instructions and accounts. This
+file simplifies the process of integrating your on-chain program with client
+applications.
 
 Key Benefits of the IDL:
 
@@ -15,11 +16,13 @@ Key Benefits of the IDL:
   instructions and accounts
 - Client Generation: Used to generate client code to interact with the program
 
+<Callout type="info">
 The `anchor build` command generates an IDL file located at
 `/target/idl/<program-name>.json`.
+</Callout>
 
-The code snippets below highlights how the program, IDL, and client relate to
-each other.
+The code snippets in the sections below highlight how the program, IDL, and
+client relate to each other.
 
 ## Program Instructions
 
@@ -33,7 +36,7 @@ each instruction.
 The program below includes an `initialize` instruction, specifying the accounts
 and parameters it requires.
 
-```rust {8-12, 15-22}
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 
 declare_id!("BYFW1vhC1ohxwRbYoLbAWs86STa25i9sD5uEusVjTYNd");
@@ -41,6 +44,9 @@ declare_id!("BYFW1vhC1ohxwRbYoLbAWs86STa25i9sD5uEusVjTYNd");
 #[program]
 mod hello_anchor {
     use super::*;
+    // [!code word:initialize]
+    // [!code word:Initialize]
+    // [!code highlight:5]
     pub fn initialize(ctx: Context<Initialize>, data: u64) -> Result<()> {
         ctx.accounts.new_account.data = data;
         msg!("Changed data to: {}!", data);
@@ -48,6 +54,7 @@ mod hello_anchor {
     }
 }
 
+ // [!code highlight:8]
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(init, payer = signer, space = 8 + 8)]
@@ -67,9 +74,9 @@ pub struct NewAccount {
 <Tab value="IDL">
 
 The generated IDL file includes the instruction in a standardized JSON format,
-including its name, accounts, arguments, and discriminator.
+including its name, discriminator, accounts, and arguments.
 
-```json filename="JSON" {11-12, 14-27, 30-33}
+```json title="JSON"
 {
   "address": "BYFW1vhC1ohxwRbYoLbAWs86STa25i9sD5uEusVjTYNd",
   "metadata": {
@@ -80,9 +87,15 @@ including its name, accounts, arguments, and discriminator.
   },
   "instructions": [
     {
+      // [!code word:initialize]
+      // [!code highlight]
       "name": "initialize",
+      // [!code word:discriminator:1]
+      // [!code highlight]
       "discriminator": [175, 175, 109, 31, 13, 152, 155, 237],
+      // [!code word:accounts:1]
       "accounts": [
+        // [!code highlight:14]
         {
           "name": "new_account",
           "writable": true,
@@ -98,7 +111,9 @@ including its name, accounts, arguments, and discriminator.
           "address": "11111111111111111111111111111111"
         }
       ],
+      // [!code word:args:1]
       "args": [
+        // [!code highlight:4]
         {
           "name": "data",
           "type": "u64"
@@ -135,25 +150,27 @@ including its name, accounts, arguments, and discriminator.
 The IDL file is then used to generate a client for interacting with the program,
 simplifying the process of invoking the program instruction.
 
-```ts {19-26}
-import * as anchor from '@coral-xyz/anchor';
-import { Program, BN } from '@coral-xyz/anchor';
-import { HelloAnchor } from '../target/types/hello_anchor';
-import { Keypair } from '@solana/web3.js';
-import assert from 'assert';
+```ts title="test.ts"
+import * as anchor from "@coral-xyz/anchor";
+import { Program, BN } from "@coral-xyz/anchor";
+import { HelloAnchor } from "../target/types/hello_anchor";
+import { Keypair } from "@solana/web3.js";
+import assert from "assert";
 
-describe('hello_anchor', () => {
+describe("hello_anchor", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
   const wallet = provider.wallet as anchor.Wallet;
   const program = anchor.workspace.HelloAnchor as Program<HelloAnchor>;
 
-  it('initialize', async () => {
+  it("initialize", async () => {
     // Generate keypair for the new account
     const newAccountKp = new Keypair();
 
     // Send transaction
     const data = new BN(42);
+    // [!code word:initialize]
+    // [!code highlight:8]
     const transactionSignature = await program.methods
       .initialize(data)
       .accounts({
@@ -168,8 +185,8 @@ describe('hello_anchor', () => {
       newAccountKp.publicKey,
     );
 
-    console.log('Transaction signature: ', transactionSignature);
-    console.log('On-chain data is:', newAccount.data.toString());
+    console.log("Transaction signature: ", transactionSignature);
+    console.log("On-chain data is:", newAccount.data.toString());
     assert(data.eq(newAccount.data));
   });
 });
@@ -181,8 +198,8 @@ describe('hello_anchor', () => {
 ## Program Accounts
 
 The `accounts` array in the IDL corresponds to the structs in a program
-annotated with the `#[account]` macro. These structs define the data stored in
-accounts created by the program.
+annotated with the `#[account]` attribute. These structs define the data stored
+on accounts created by the program.
 
 <Tabs items={['Program', 'IDL', 'Client']}>
 <Tab value="Program">
@@ -190,7 +207,7 @@ accounts created by the program.
 The program below defines a `NewAccount` struct with a single `data` field of
 type `u64`.
 
-```rust {24-27}
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 
 declare_id!("BYFW1vhC1ohxwRbYoLbAWs86STa25i9sD5uEusVjTYNd");
@@ -214,6 +231,8 @@ pub struct Initialize<'info> {
     pub system_program: Program<'info, System>,
 }
 
+// [!code word:NewAccount]
+// [!code highlight:4]
 #[account]
 pub struct NewAccount {
     data: u64,
@@ -226,7 +245,7 @@ pub struct NewAccount {
 The generated IDL file includes the account in a standardized JSON format,
 including its name, discriminator, and fields.
 
-```json filename="JSON" {39-40, 45-54}
+```json title="JSON"
 {
   "address": "BYFW1vhC1ohxwRbYoLbAWs86STa25i9sD5uEusVjTYNd",
   "metadata": {
@@ -265,11 +284,15 @@ including its name, discriminator, and fields.
   ],
   "accounts": [
     {
+      // [!code word:discriminator]
+      // [!code word:NewAccount]
+      // [!code highlight:2]
       "name": "NewAccount",
       "discriminator": [176, 95, 4, 118, 91, 177, 125, 232]
     }
   ],
   "types": [
+    // [!code highlight:12]
     {
       "name": "NewAccount",
       "type": {
@@ -292,20 +315,20 @@ including its name, discriminator, and fields.
 The IDL file is then used to generate a client for interacting with the program,
 simplifying the process of fetching and deserializing account data.
 
-```ts {29-31}
-import * as anchor from '@coral-xyz/anchor';
-import { Program, BN } from '@coral-xyz/anchor';
-import { HelloAnchor } from '../target/types/hello_anchor';
-import { Keypair } from '@solana/web3.js';
-import assert from 'assert';
+```ts title="test.ts"
+import * as anchor from "@coral-xyz/anchor";
+import { Program, BN } from "@coral-xyz/anchor";
+import { HelloAnchor } from "../target/types/hello_anchor";
+import { Keypair } from "@solana/web3.js";
+import assert from "assert";
 
-describe('hello_anchor', () => {
+describe("hello_anchor", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
   const wallet = provider.wallet as anchor.Wallet;
   const program = anchor.workspace.HelloAnchor as Program<HelloAnchor>;
 
-  it('initialize', async () => {
+  it("initialize", async () => {
     // Generate keypair for the new account
     const newAccountKp = new Keypair();
 
@@ -321,12 +344,14 @@ describe('hello_anchor', () => {
       .rpc();
 
     // Fetch the created account
+    // [!code word:.newAccount.:1]
+    // [!code highlight:3]
     const newAccount = await program.account.newAccount.fetch(
       newAccountKp.publicKey,
     );
 
-    console.log('Transaction signature: ', transactionSignature);
-    console.log('On-chain data is:', newAccount.data.toString());
+    console.log("Transaction signature: ", transactionSignature);
+    console.log("On-chain data is:", newAccount.data.toString());
     assert(data.eq(newAccount.data));
   });
 });
@@ -345,9 +370,11 @@ The discriminator is generated using the first 8 bytes of the Sha256 hash of a
 prefix combined with the instruction or account name. As of Anchor v0.30, these
 discriminators are included in the IDL file.
 
-Note that when working with Anchor, you typically won't need to interact
-directly with these discriminators. This section is primarily to provide context
-on how the discriminator is generated and used.
+<Callout type="info">
+  Note that when working with Anchor, you typically won't need to interact
+  directly with these discriminators. This section is primarily to provide
+  context on how the discriminator is generated and used.
+</Callout>
 
 <Tabs items={['Instructions', 'Accounts']}>
 <Tab value="Instructions">
@@ -359,10 +386,12 @@ When an Anchor program instruction is invoked, the discriminator is included as
 the first 8 bytes of the instruction data. This is done automatically by the
 Anchor client.
 
-```json filename="IDL"  {4}
+```json title="IDL"
   "instructions": [
     {
       "name": "initialize",
+      // [!code word:discriminator]
+      // [!code highlight]
       "discriminator": [175, 175, 109, 31, 13, 152, 155, 237],
        ...
     }
@@ -409,10 +438,12 @@ which is used
 The account discriminator is used to identify the specific account type when
 deserializing on-chain data and is set when the account is created.
 
-```json filename="IDL"  {4}
+```json title="IDL"
   "accounts": [
     {
       "name": "NewAccount",
+      // [!code word:discriminator]
+      // [!code highlight]
       "discriminator": [176, 95, 4, 118, 91, 177, 125, 232]
     }
   ]
@@ -450,9 +481,12 @@ You can find the implementation of the discriminator generation in the Anchor
 codebase
 [here](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/attribute/account/src/lib.rs#L101-L117).
 
-Note that different programs using identical account names will generate the
-same discriminator. When deserializing account data, Anchor programs will also
-check an account is owned by the expected program for a specified account type.
+<Callout type="info">
+  Note that different programs using identical account names will generate the
+  same discriminator. When deserializing account data, Anchor programs will also
+  check an account is owned by the expected program for a specified account
+  type.
+</Callout>
 
 </Tab>
 </Tabs>

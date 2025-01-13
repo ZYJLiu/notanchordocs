@@ -7,10 +7,13 @@ description:
 
 ## Usage
 
-Zero copy is a feature that is useful for working with large account data.
+Zero copy is a deserialization feature that allows programs to read account data
+directly from memory without copying it. This is particularly useful when
+working with large accounts.
 
-To use zero-copy add the `bytemuck` crate to your dependencies. Enable the
-`min_const_generics` feature to work with arrays of arbitrary sizes.
+To use zero-copy add the `bytemuck` crate to your dependencies. Add the
+`min_const_generics` feature to allow working with arrays of any size in your
+zero-copy types.
 
 ```toml title="Cargo.toml"
 [dependencies]
@@ -24,6 +27,7 @@ To define an account type that uses zero-copy, annotate the struct with
 [`#[account(zero_copy)]`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/attribute/account/src/lib.rs#L319).
 
 ```rs
+// [!code highlight]
 #[account(zero_copy)]
 pub struct Data {
     // 10240 bytes - 8 bytes account discriminator
@@ -35,6 +39,7 @@ The `#[account(zero_copy)]` attribute automatically implements several traits
 required for zero-copy deserialization:
 
 ```rs
+// [!code highlight:4]
 #[derive(Copy, Clone)]
 #[derive(bytemuck::Zeroable)]
 #[derive(bytemuck::Pod)]
@@ -56,6 +61,8 @@ For example:
 ```rs
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
+    // [!code word:AccountLoader]
+    // [!code highlight]
     pub zero_copy_account: AccountLoader<'info, Data>,
 }
 ```
@@ -69,6 +76,8 @@ zero-copy account.
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(
+        // [!code word:init:1]
+        // [!code highlight:4]
         init,
         // 10240 bytes is max space to allocate with init constraint
         space = 8 + 10232,
@@ -83,40 +92,44 @@ pub struct Initialize<'info> {
 
 <Callout type="info">
   The `init` constraint is limited to allocating a maximum of 10240 bytes due to
-  CPI limitations. The `init` constraint makes a CPI call to the SystemProgram
-  to create the account.
+  CPI limitations. Under the hood, the `init` constraint makes a CPI call to the
+  SystemProgram to create the account.
 </Callout>
 
 When initializing a zero-copy account for the first time, use
 [`load_init`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/src/accounts/account_loader.rs#L194-L214)
-to get a mutable reference to the account data. Under the hood, `load_init` also
-sets the account discriminator.
+to get a mutable reference to the account data. The `load_init` method also sets
+the account discriminator.
 
 ```rs
 pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+    // [!code word:load_init]
+    // [!code highlight]
     let account = &mut ctx.accounts.data_account.load_init()?;
     account.data = [1; 10232];
     Ok(())
 }
 ```
 
-For accounts larger than 10240 bytes, use the
+For accounts that require more than 10240 bytes, use the
 [`zero`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/syn/src/codegen/accounts/constraints.rs#L200-L217)
 constraint instead of `init`. The `zero` constraint verifies the account has not
-been initialized by checking that its discriminator is unset.
+been initialized by checking that its discriminator has not been set.
 
 ```rs
 #[derive(Accounts)]
 pub struct Initialize<'info> {
+    // [!code word:zero]
+    // [!code highlight]
     #[account(zero)]
     pub data_account: AccountLoader<'info, Data>,
 }
 ```
 
-With the `zero` constraint, you'll need to create the account in a separate
-instruction by directly calling the System Program. This allows you to create
-accounts up to Solana's maximum account size of 10MB (10_485_760 bytes),
-bypassing the CPI size limitation.
+With the `zero` constraint, you'll need to first create the account in a
+separate instruction by directly calling the System Program. This allows you to
+create accounts up to Solana's maximum account size of 10MB (10_485_760 bytes),
+bypassing the CPI limitation.
 
 Just as before, use `load_init` to get a mutable reference to the account data
 and set the account discriminator. Since 8 bytes are reserved for the account
@@ -124,6 +137,8 @@ discriminator, the maximum data size is 10_485_752 bytes (10MB - 8 bytes).
 
 ```rs
 pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+    // [!code word:load_init]
+    // [!code highlight]
     let account = &mut ctx.accounts.data_account.load_init()?;
     account.data = [1; 10_485_752];
     Ok(())
@@ -139,6 +154,7 @@ when you need mutable access to update an existing zero-copy account:
 ```rs
 #[derive(Accounts)]
 pub struct Update<'info> {
+    // [!code highlight]
     #[account(mut)]
     pub data_account: AccountLoader<'info, Data>,
 }
@@ -146,6 +162,8 @@ pub struct Update<'info> {
 
 ```rs
 pub fn update(ctx: Context<Update>) -> Result<()> {
+    // [!code word:load_mut]
+    // [!code highlight]
     let account = &mut ctx.accounts.data_account.load_mut()?;
     account.data = [2; 10232];
     Ok(())
@@ -167,6 +185,8 @@ pub struct ReadOnly<'info> {
 
 ```rs
 pub fn read_only(ctx: Context<ReadOnly>) -> Result<()> {
+    // [!code word:load]
+    // [!code highlight]
     let account = &ctx.accounts.data_account.load()?;
     msg!("First 10 bytes: {:?}", &account.data[..10]);
     Ok(())
@@ -346,6 +366,7 @@ describe("zero-copy-two", () => {
         space,
       );
 
+    // [!code highlight:7]
     const createAccountInstruction = anchor.web3.SystemProgram.createAccount({
       fromPubkey: program.provider.publicKey,
       newAccountPubkey: dataAccount.publicKey,
@@ -354,6 +375,7 @@ describe("zero-copy-two", () => {
       programId: program.programId,
     });
 
+    // [!code highlight:6]
     const initializeInstruction = await program.methods
       .initialize()
       .accounts({
@@ -380,7 +402,3 @@ describe("zero-copy-two", () => {
 
 </Tab>
 </Tabs>
-
-https://github.com/solana-developers/anchor-zero-copy-example
-
-https://github.com/coral-xyz/anchor/tree/master/tests/zero-copy

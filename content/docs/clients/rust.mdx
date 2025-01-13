@@ -1,19 +1,25 @@
 ---
 title: Rust
-description: Placeholder
+description:
+  Learn how to use Anchor's Rust client library to interact with Solana programs
 ---
 
-https://docs.rs/anchor-client/latest/anchor_client/
+The [`anchor-client`](https://docs.rs/anchor-client/latest/anchor_client/) crate
+is the Rust client library for interacting with Anchor programs. You can find
+the source code [here](https://github.com/coral-xyz/anchor/tree/v0.30.1/client).
 
 ## Example
 
-This example demonstrates how to use `anchor-client` to interact with an Anchor
-program. The program client is automatically generated from the program's IDL
-using the `declare_program!` macro. This macro generates a depedency free client
-interface that allows you to interact with the program's instructions and
-accounts.
+The example below demonstrates how to use the `anchor-client` crate to interact
+with a simple Anchor program. The program client can be automatically generated
+from the program's IDL using the `declare_program!` macro. This macro generates
+dependency free modules that enable you to interact with the program's
+instructions and accounts.
 
-This example uses the IDL from the following example counter program:
+The program has two instructions:
+
+- `initialize` – Creates and initializes a counter account to store a value
+- `increment` – Increments the value stored on the counter account
 
 ```rs title="lib.rs"
 use anchor_lang::prelude::*;
@@ -66,7 +72,8 @@ pub struct Counter {
 }
 ```
 
-Example folder structure for client rust script:
+Below is an example folder structure for a Rust client that interacts with the
+Anchor program:
 
 <Files>
   <Folder name="client-example" defaultOpen={true}>
@@ -81,8 +88,8 @@ Example folder structure for client rust script:
   </Folder>
 </Files>
 
-The program IDL must be in an `/idls` folder. The `declare_program!` macro
-searches for the IDL in the `/idls` folder to generate the client interface.
+The program IDL must be in a `/idls` folder. The `declare_program!` macro
+searches for the IDL in the `/idls` folder to generate the client modules.
 
 ```json title="idls/example.json"
 {
@@ -150,10 +157,10 @@ searches for the IDL in the `/idls` folder to generate the client interface.
 }
 ```
 
-In the `src/main.rs` file:
+Below is the `src/main.rs` file for interacting with the program:
 
-1. The `declare_program!` macro - Generates a client interface for the program
-   based on the IDL
+1. The `declare_program!` macro - Generates client modules for the program using
+   the IDL file
 
 2. The `anchor_client` crate - Provides utilities for interacting with the
    program, including:
@@ -245,7 +252,7 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
-Dependencies for the example client script:
+Below are the dependencies for the `Cargo.toml` file:
 
 ```toml title="Cargo.toml"
 [package]

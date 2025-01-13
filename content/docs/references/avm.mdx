@@ -1,9 +1,11 @@
 ---
 title: Anchor Version Manager
-description: Placeholder
+description: AVM reference documentation
 ---
 
-Anchor Version Manager (avm) is provided to manage multiple installations of the anchor-cli binary. This may be required to produce verifiable builds, or if you'd prefer to work with an alternate version.
+Anchor Version Manager (avm) is provided to manage multiple installations of the
+anchor-cli binary. This may be required to produce verifiable builds, or if
+you'd prefer to work with an alternate version.
 
 ---
 
@@ -31,7 +33,9 @@ SUBCOMMANDS:
 avm install <VERSION_OR_COMMIT>
 ```
 
-Install the specified version of anchor-cli. The version argument should follow semver versioning. It is also possible to use `latest` as the version argument to install the latest version.
+Install the specified version of anchor-cli. The version argument should follow
+semver versioning. It is also possible to use `latest` as the version argument
+to install the latest version.
 
 It's also possible to install based on a specific commit hash:
 
@@ -99,4 +103,6 @@ avm uninstall <version>
 avm use <version>
 ```
 
-Use a specific version. This version will remain in use until you change it by calling the same command again. Similarly to `avm install`, you can also use `latest` for the version.
+Use a specific version. This version will remain in use until you change it by
+calling the same command again. Similarly to `avm install`, you can also use
+`latest` for the version.

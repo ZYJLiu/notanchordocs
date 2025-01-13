@@ -1,13 +1,13 @@
 {
   "title": "Program Development",
   "pages": [
-    "examples",
     "account-types",
     "account-constraints",
     "anchor-toml",
     "cli",
     "avm",
     "space",
-    "type-conversion"
+    "type-conversion",
+    "examples"
   ]
 }

@@ -1,18 +1,17 @@
 ---
 title: Emit Events
 description:
-  Learn how to emit events in Anchor programs using emit!() and emit_cpi!()
-  macros.
+  Learn how to emit events in Anchor programs using emit! and emit_cpi! macros.
 ---
 
 ## Examples
 
 Anchor provides two macros for emitting events in your programs:
 
-1. `emit!()` - Emits events directly to program logs, which is simpler but can
-   potentially be truncated
-2. `emit_cpi!()` - Emits events through Cross Program Invocation (CPI)
-   instruction data, which is more reliable but has higher compute costs
+1. `emit!()` - Emits events directly to program logs. This is the simpler,
+   though program logs may be truncated by data providers in some cases
+2. `emit_cpi!()` - Emits events through a Cross Program Invocation (CPI) by
+   including the event data in the instruction data.
 
 <Callout type="info">
 
@@ -65,6 +64,8 @@ pub mod event {
     use super::*;
 
     pub fn emit_event(_ctx: Context<EmitEvent>, input: String) -> Result<()> {
+        // [!code word:emit!]
+        // [!code highlight]
         emit!(CustomEvent { message: input });
         Ok(())
     }
@@ -73,6 +74,7 @@ pub mod event {
 #[derive(Accounts)]
 pub struct EmitEvent {}
 
+// [!code highlight:4]
 #[event]
 pub struct CustomEvent {
     pub message: String,
@@ -95,6 +97,8 @@ describe("event", () => {
 
   it("Emits custom event", async () => {
     // Set up listener before sending transaction
+    // [!code word:addEventListener]
+    // [!code highlight:4]
     const listenerId = program.addEventListener("customEvent", event => {
       // Do something with the event data
       console.log("Event Data:", event);
@@ -162,15 +166,19 @@ pub mod event_cpi {
     use super::*;
 
     pub fn emit_event(ctx: Context<EmitEvent>, input: String) -> Result<()> {
+        // [!code word:emit_cpi!]
+        // [!code highlight]
         emit_cpi!(CustomEvent { message: input });
         Ok(())
     }
 }
 
+// [!code highlight]
 #[event_cpi]
 #[derive(Accounts)]
 pub struct EmitEvent {}
 
+// [!code highlight:4]
 #[event]
 pub struct CustomEvent {
     pub message: String,
@@ -201,12 +209,14 @@ describe("event-cpi", () => {
     );
 
     // Fetch the transaction data
+    // [!code highlight:4]
     const transactionData = await program.provider.connection.getTransaction(
       transactionSignature,
       { commitment: "confirmed" },
     );
 
     // Decode the event data from the CPI instruction data
+    // [!code highlight:4]
     const eventIx = transactionData.meta.innerInstructions[0].instructions[0];
     const rawData = anchor.utils.bytes.bs58.decode(eventIx.data);
     const base64Data = anchor.utils.bytes.base64.encode(rawData.subarray(8));
@@ -221,12 +231,13 @@ describe("event-cpi", () => {
 
 The
 [`event_cpi`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/attribute/event/src/lib.rs#L217-L226)
-attribute must be added to the `#[derive(Accounts)]` struct used in an
+attribute must be added to the `#[derive(Accounts)]` struct for the instruction
 instruction that emits events using the `emit_cpi!()` macro. This attribute
 [automatically includes additional accounts](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/syn/src/parser/accounts/event_cpi.rs#L28-L70)
 that are required for the self CPI.
 
 ```rs title="lib.rs"
+// [!code highlight]
 #[event_cpi]
 #[derive(Accounts)]
 pub struct RequiredAccounts {
@@ -257,9 +268,7 @@ console.log(event);
 
 Below is an example transaction showing how event data appears in the
 transaction details. When using `emit_cpi!()`, the event data is encoded and
-included in the `data` field of an inner instruction. The inner instruction
-appears under `meta.innerInstructions[0].instructions[0]` in the transaction
-data.
+included in the `data` field of an inner instruction (CPI).
 
 In the example transaction below, the encoded event data is
 `"data": "6AJcBqZP8afBKheoif1oA6UAiLAcqYr2RaR33pFnEY1taQp"` in the
@@ -352,19 +361,7 @@ In the example transaction below, the encoded event data is
 ```
 
 <Callout type="info">
-  There is currenly not a way to subscribe to event data emitted through a CPI.
-  It requires fetching the transaction data and decoding the event data from the
-  instruction data.
+  Currently, event data emitted through CPIs cannot be directly subscribed to.
+  To access this data, you must fetch the complete transaction data and manually
+  decode the event information from the instruction data of the CPI.
 </Callout>
-
-https://github.com/coral-xyz/anchor/tree/master/tests/events
-
-https://github.com/anza-xyz/agave/blob/v1.18.26/sdk/program/src/log.rs#L115-L124
-
-https://github.com/anza-xyz/agave/blob/v1.18.26/sdk/program/src/syscalls/definitions.rs#L62
-
-https://github.com/anza-xyz/agave/blob/v1.18.26/programs/bpf_loader/src/syscalls/mod.rs#L468
-
-https://github.com/anza-xyz/agave/blob/v1.18.26/programs/bpf_loader/src/syscalls/logging.rs#L107-L160
-
-https://github.com/anza-xyz/agave/blob/v1.18.26/program-runtime/src/stable_log.rs#L46-L61

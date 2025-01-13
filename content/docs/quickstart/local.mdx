@@ -1,6 +1,8 @@
 ---
 title: Local Development
-description: Learn how to build Solana programs using the Anchor framework on your local machine.
+description:
+  Learn how to build Solana programs using the Anchor framework on your local
+  machine.
 ---
 
 The Anchor framework is a tool that simplifies the process of building Solana
@@ -105,20 +107,20 @@ This file demonstrates how to invoke the default program's `initialize`
 instruction in Typescript.
 
 ```ts filename="my-project.ts"
-import * as anchor from '@coral-xyz/anchor';
-import { Program } from '@coral-xyz/anchor';
-import { MyProject } from '../target/types/my_project';
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { MyProject } from "../target/types/my_project";
 
-describe('my-project', () => {
+describe("my-project", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
   const program = anchor.workspace.MyProject as Program<MyProject>;
 
-  it('Is initialized!', async () => {
+  it("Is initialized!", async () => {
     // Add your test here.
     const tx = await program.methods.initialize().rpc();
-    console.log('Your transaction signature', tx);
+    console.log("Your transaction signature", tx);
   });
 });
 ```
@@ -256,9 +258,15 @@ wallet = "~/.config/solana/id.json"
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 ```
 
-To deploy your program to devnet, change the `cluster` value to `Devnet`. Note
-that this requires your wallet to have enough SOL on Devnet to cover deployment
-cost.
+To deploy your program to devnet, change the `cluster` value to `Devnet`.
+
+<Callout type="info">
+
+Note that deploying to devnet requires your wallet to have enough SOL to cover
+deployment cost. You can get devnet SOL using the
+[Web Faucet](https://faucet.solana.com/).
+
+</Callout>
 
 ```diff
 -cluster = "Localnet"

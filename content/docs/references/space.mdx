@@ -1,16 +1,19 @@
 ---
 title: Account Space
-description: Placeholder
+description:
+  Reference guide for calculating account data size (bytes) requirements by Rust
+  type
 ---
 
 This reference tells you how much space you should allocate for an account.
 
 ---
 
-This only applies to accounts that don't use `zero-copy`. `zero-copy` uses `repr(C)` with a pointer cast,
-so there the `C` layout applies.
+This only applies to accounts that don't use `zero-copy`. `zero-copy` uses
+`repr(C)` with a pointer cast, so there the `C` layout applies.
 
-In addition to the space for the account data, you have to add `8` to the `space` constraint for Anchor's internal discriminator (see the example).
+In addition to the space for the account data, you have to add `8` to the
+`space` constraint for Anchor's internal discriminator (see the example).
 
 ## Type chart
 
@@ -64,7 +67,10 @@ pub struct InitializeMyData<'info> {
 
 ## The InitSpace macro
 
-Sometimes it can be difficult to calculate the initial space of an account. This macro will add an `INIT_SPACE` constant to the structure. It is not necessary for the structure to contain the `#[account]` macro to generate the constant. Here's an example:
+Sometimes it can be difficult to calculate the initial space of an account. This
+macro will add an `INIT_SPACE` constant to the structure. It is not necessary
+for the structure to contain the `#[account]` macro to generate the constant.
+Here's an example:
 
 ```rust
 #[account]
@@ -90,4 +96,5 @@ pub struct Initialize<'info> {
 A few important things to know:
 
 - Don't forget the discriminator when defining `space`
-- The `max_len` length represents the length of the structure, not the total length. (ie: the `max_len` of a Vec\<u32\> will be `max_len` \* 4)
+- The `max_len` length represents the length of the structure, not the total
+  length. (ie: the `max_len` of a Vec\<u32\> will be `max_len` \* 4)

@@ -1,19 +1,21 @@
 ---
 title: Program Derived Address
-description: Placeholder
+description:
+  Learn how to use Program Derived Addresses (PDAs) in Anchor programs to create
+  deterministic account addresses.
 ---
 
-[Program Derived Addresses (PDA)](/docs/core/pda) refer to a feature of Solana
-development that allows you to create a unique address derived deterministically
-from pre-defined inputs (seeds) and a program ID.
+Program Derived Addresses (PDA) refer to a feature of Solana development that
+allows you to create a unique address derived deterministically from pre-defined
+inputs (seeds) and a program ID.
 
 This section will cover basic examples of how to use PDAs in an Anchor program.
 
 ## Anchor PDA Constraints
 
 When using PDAs in an Anchor program, you generally use Anchor's account
-constraints to define the seeds used to derive the PDA. These constraints serve
-as security checks to ensure that the correct address is derived.
+constraints to define the seeds to derive the PDA. These constraints serve as
+security checks to ensure that the correct address is derived.
 
 The constraints used to define the PDA seeds include:
 
@@ -25,7 +27,9 @@ The constraints used to define the PDA seeds include:
   This constraint is only used to derive a PDA where the program ID is not the
   current program.
 
-The `seeds` and `bump` constraints are required to be used together.
+<Callout type="info">
+  The `seeds` and `bump` constraints are required to be used together.
+</Callout>
 
 ### Usage Examples
 
@@ -45,6 +49,7 @@ The `seeds` constraint specifies the optional values used to derive the PDA.
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
     #[account(
+        // [!code highlight]
         seeds = [],
         bump,
     )]
@@ -60,6 +65,8 @@ pub struct InstructionAccounts<'info> {
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
     #[account(
+        // [!code word:b"hello_world"]
+        // [!code highlight]
         seeds = [b"hello_world"],
         bump,
     )]
@@ -77,6 +84,7 @@ pub struct InstructionAccounts<'info> {
 pub struct InstructionAccounts<'info> {
     pub signer: Signer<'info>,
     #[account(
+        // [!code highlight]
         seeds = [b"hello_world", signer.key().as_ref()],
         bump,
     )]
@@ -102,6 +110,7 @@ calculated each time the instruction is invoked.
 pub struct InstructionAccounts<'info> {
     #[account(
         seeds = [b"hello_world"],
+        // [!code highlight]
         bump,
     )]
     pub pda_account: SystemAccount<'info>,
@@ -119,6 +128,7 @@ bump seed is stored as a field on an existing account.
 pub struct InstructionAccounts<'info> {
     #[account(
         seeds = [b"hello_world"],
+        // [!code highlight]
         bump = pda_account.bump_seed,
     )]
     pub pda_account: Account<'info, CustomAccount>,
@@ -149,6 +159,8 @@ pub struct InstructionAccounts<'info> {
     #[account(
         seeds = [b"hello_world"],
         bump,
+        // [!code word:other_program]
+        // [!code highlight]
         seeds::program = other_program.key(),
     )]
     pub pda_account: SystemAccount<'info>,
@@ -169,11 +181,13 @@ pub struct InstructionAccounts<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
     #[account(
+        // [!code word:init]
+        // [!code highlight:3]
         init,
-        seeds = [b"hello_world", signer.key().as_ref()],
-        bump,
         payer = signer,
         space = 8 + 1,
+        seeds = [b"hello_world", signer.key().as_ref()],
+        bump,
     )]
     pub pda_account: Account<'info, CustomAccount>,
     pub system_program: Program<'info, System>,
@@ -185,6 +199,13 @@ pub struct CustomAccount {
 }
 ```
 
+<Callout type="info">
+  The `init` constraint must be used with `payer` and `space`. The `payer`
+  specifies the account that will pay for the account creation. The `space`
+  specifies the bytes to allocate for the account (including the 8-byte
+  discriminator).
+</Callout>
+
 </Tab>
 </Tabs>
 
@@ -192,7 +213,8 @@ pub struct CustomAccount {
 
 Program Derived Address (PDA) seeds defined in the `seeds` constraint are
 included in the program's IDL file. This allows the Anchor client to
-automatically resolve accounts using these seeds when constructing instructions.
+automatically resolve account addresses using these seeds when constructing
+instructions.
 
 This example below shows the relationship between the program, IDL, and client.
 
@@ -202,7 +224,7 @@ This example below shows the relationship between the program, IDL, and client.
 The program below defines a `pda_account` using a static seed (`b"hello_world"`)
 and the signer's public key as a dynamic seed.
 
-```rs {18} /signer/
+```rs
 use anchor_lang::prelude::*;
 
 declare_id!("BZLiJ62bzRryYp9mRobz47uA66WDgtfTXhhgM25tJyx5");
@@ -218,8 +240,10 @@ mod hello_anchor {
 
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
+    // [!code word:signer]
     pub signer: Signer<'info>,
     #[account(
+        // [!code highlight]
         seeds = [b"hello_world", signer.key().as_ref()],
         bump,
     )]
@@ -235,7 +259,7 @@ The program's IDL file includes the PDA seeds defined in the `seeds` constraint.
 - The static seed `b"hello_world"` is converted to byte values.
 - The dynamic seed is included as reference to the signer account.
 
-```json {22-29}
+```json
 {
   "address": "BZLiJ62bzRryYp9mRobz47uA66WDgtfTXhhgM25tJyx5",
   "metadata": {
@@ -256,12 +280,15 @@ The program's IDL file includes the PDA seeds defined in the `seeds` constraint.
         {
           "name": "pda_account",
           "pda": {
+            // [!code word:seeds]
             "seeds": [
               {
+                // [!code highlight:2]
                 "kind": "const",
                 "value": [104, 101, 108, 108, 111, 95, 119, 111, 114, 108, 100]
               },
               {
+                // [!code highlight:2]
                 "kind": "account",
                 "path": "signer"
               }
@@ -286,20 +313,20 @@ derivation. This removes the need to explicitly derive the PDA when building the
 instruction.
 
 ```ts {13}
-import * as anchor from '@coral-xyz/anchor';
-import { Program } from '@coral-xyz/anchor';
-import { HelloAnchor } from '../target/types/hello_anchor';
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { HelloAnchor } from "../target/types/hello_anchor";
 
-describe('hello_anchor', () => {
+describe("hello_anchor", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
   const program = anchor.workspace.HelloAnchor as Program<HelloAnchor>;
 
-  it('Is initialized!', async () => {
-    // Add your test here.
+  it("Is initialized!", async () => {
+    // Account address is automatically resolved using the IDL
     const tx = await program.methods.testInstruction().rpc();
-    console.log('Your transaction signature', tx);
+    console.log("Your transaction signature", tx);
   });
 });
 ```

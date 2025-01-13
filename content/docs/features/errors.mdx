@@ -1,6 +1,6 @@
 ---
 title: Custom Errors
-description: Placeholder
+description: Learn how to implement custom error handling in Anchor programs.
 ---
 
 All instruction handlers in Anchor programs return a custom `Result<T>` type
@@ -8,6 +8,7 @@ that allows you to handle successful execution with `Ok(T)` and error cases with
 `Err(Error)`.
 
 ```rs
+// [!code word:Result]
 pub fn custom_instruction(ctx: Context<CustomInstruction>) -> Result<()> {
     // --snip--
     Ok(())
@@ -16,13 +17,15 @@ pub fn custom_instruction(ctx: Context<CustomInstruction>) -> Result<()> {
 
 The
 [`Result<T>`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/src/lib.rs#L74)
-type used in Anchor programs is a type alias that wraps the standard Rust
+type in Anchor programs is a type alias that wraps the standard Rust
 `Result<T, E>`. In this case, `T` represents the successful return type, while
 `E` is Anchor's custom `Error` type.
 
 ```rs
 pub type Result<T> = std::result::Result<T, error::Error>;
 ```
+
+## Anchor Error
 
 When an error occurs in an Anchor program, it returns a custom
 [`Error`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/src/error.rs#L277-L281)
@@ -35,8 +38,6 @@ pub enum Error {
     ProgramError(Box<ProgramErrorWithOrigin>),
 }
 ```
-
-## Anchor Error
 
 The `Error` type in Anchor programs can be one of two variants:
 
@@ -68,17 +69,15 @@ pub struct AnchorError {
 }
 ```
 
-An `AnchorError` can be thought of as two categories:
+An `AnchorError` can be thought of as having two categories:
 
-1. Internal Anchor Errors - These are built-in errors defined by the Anchor
-   framework itself, used for common validation and runtime checks. They are
-   defined in the
+1. Internal Anchor Errors - These are built-in errors included with the Anchor
+   framework. They are defined in the
    [`ErrorCode`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/src/error.rs#L10-L275)
    enum.
 
-2. Custom Program Errors - These are program-specific errors that developers can
-   define to handle their own error cases. They allow programs to communicate
-   specific error conditions back to clients.
+2. Custom Program Errors - These are program specific errors that developers
+   define to handle custom error cases.
 
 The `error_code_number` from an `AnchorError` has the following numbering
 scheme:
@@ -96,7 +95,7 @@ scheme:
 ## Usage
 
 Anchor provides a convenient way to define custom errors through the
-`error_code` attribute macro. The implementation details can be found
+`error_code` attribute. The implementation details can be found
 [here](https://github.com/coral-xyz/anchor/blob/master/lang/syn/src/codegen/error.rs).
 
 When you define an enum with the `error_code` attribute, Anchor automatically:
@@ -130,6 +129,8 @@ mod hello_anchor {
     use super::*;
     pub fn set_data(ctx: Context<SetData, data: MyAccount) - Result<() {
         if data.data = 100 {
+            // [!code word:MyError]
+            // [!code highlight]
             return err!(MyError::DataTooLarge);
         }
         ctx.accounts.my_account.set_inner(data);
@@ -158,6 +159,8 @@ can rewrite the previous example using `require!`:
 mod hello_anchor {
     use super::*;
     pub fn set_data(ctx: Context<SetData, data: MyAccount) - Result<() {
+        // [!code word:MyError]
+        // [!code highlight]
         require!(data.data < 100, MyError::DataTooLarge);
         ctx.accounts.my_account.set_inner(data);
         Ok(())
@@ -208,6 +211,8 @@ pub mod custom_error {
     use super::*;
 
     pub fn validate_amount(_ctx: Context<ValidateAmount, amount: u64) - Result<() {
+        // [!code word:CustomError]
+        // [!code highlight:2]
         require!(amount = 10, CustomError::AmountTooSmall);
         require!(amount <= 100, CustomError::AmountTooLarge);
 
