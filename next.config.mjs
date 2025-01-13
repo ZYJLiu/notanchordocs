@@ -1,4 +1,5 @@
 import { createMDX } from 'fumadocs-mdx/next';
+import redirectsJson from './redirects.json' assert { type: 'json' };
 
 const withMDX = createMDX({
   mdxOptions: {
@@ -26,6 +27,11 @@ const config = {
         destination: '/docs',
         permanent: false,
       },
+      // Redirect routes from old docs
+      ...redirectsJson.redirects.map((redirect) => ({
+        ...redirect,
+        permanent: redirect.permanent ?? true,
+      })),
     ];
   },
 };
