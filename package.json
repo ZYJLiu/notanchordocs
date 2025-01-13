@@ -9,12 +9,13 @@
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
+    "@next/third-parties": "^15.1.4",
     "@svgr/webpack": "^8.1.0",
     "fumadocs-core": "14.5.4",
     "fumadocs-mdx": "11.1.1",
     "fumadocs-ui": "14.5.4",
     "lucide-react": "^0.454.0",
-    "next": "15.0.2",
+    "next": "15.1.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "zod": "^3.23.8"
