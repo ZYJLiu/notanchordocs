@@ -45,7 +45,7 @@ The `seeds` constraint specifies the optional values used to derive the PDA.
 
 - Use an empty array `[]` to define a PDA without optional seeds.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
     #[account(
@@ -61,7 +61,7 @@ pub struct InstructionAccounts<'info> {
 
 - Specify optional seeds in the `seeds` constraint.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
     #[account(
@@ -79,7 +79,7 @@ pub struct InstructionAccounts<'info> {
 - Multiple seeds can be specified in the `seeds` constraint. The `seeds`
   constraint can also reference other account addresses or account data.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
     pub signer: Signer<'info>,
@@ -105,7 +105,7 @@ The `bump` constraint specifies the bump seed used to derive the PDA.
 When using the `bump` constraint without a value, the bump is automatically
 calculated each time the instruction is invoked.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
     #[account(
@@ -123,7 +123,7 @@ You can explicitly provide the bump value, which is useful for optimizing
 compute unit usage. This assumes that the PDA account has been created and the
 bump seed is stored as a field on an existing account.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
     #[account(
@@ -153,7 +153,7 @@ This constraint is only used when deriving a PDA from a different program.
 Use this constraint when your instruction needs to interact with PDA accounts
 created by another program.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
     #[account(
@@ -175,7 +175,7 @@ The `init` constraint is commonly used with `seeds` and `bump` to create a new
 account with an address that is a PDA. Under the hood, the `init` constraint
 invokes the System Program to create the account.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
     #[account(mut)]
@@ -224,7 +224,7 @@ This example below shows the relationship between the program, IDL, and client.
 The program below defines a `pda_account` using a static seed (`b"hello_world"`)
 and the signer's public key as a dynamic seed.
 
-```rs
+```rust
 use anchor_lang::prelude::*;
 
 declare_id!("BZLiJ62bzRryYp9mRobz47uA66WDgtfTXhhgM25tJyx5");

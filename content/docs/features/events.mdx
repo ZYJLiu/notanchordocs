@@ -54,7 +54,7 @@ Example usage:
 <Tabs items={["Program", "Client"]}>
 <Tab value="Program">
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 
 declare_id!("8T7MsCZyzxboviPJg5Rc7d8iqEcDReYR2pkQKrmbg7dy");
@@ -156,7 +156,7 @@ Example usage:
 <Tabs items={["Program", "Client"]}>
 <Tab value="Program">
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 
 declare_id!("2cDQ2LxKwQ8fnFUz4LLrZ157QzBnhPNeQrTSmWcpVin1");
@@ -236,7 +236,7 @@ instruction that emits events using the `emit_cpi!()` macro. This attribute
 [automatically includes additional accounts](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/syn/src/parser/accounts/event_cpi.rs#L28-L70)
 that are required for the self CPI.
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 // [!code highlight]
 #[event_cpi]
 #[derive(Accounts)]

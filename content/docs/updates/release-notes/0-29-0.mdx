@@ -161,27 +161,27 @@ being used.
 
 Instead of
 
-```rs
+```rust
 **ctx.accounts.from.to_account_info().try_borrow_mut_lamports()? -= amount;
 **ctx.accounts.to.to_account_info().try_borrow_mut_lamports()? += amount;
 ```
 
 you can
 
-```rs
+```rust
 ctx.accounts.from.sub_lamports(amount)?;
 ctx.accounts.to.add_lamports(amount)?;
 ```
 
 Similarly for **getting** the lamports, instead of
 
-```rs
+```rust
 let lamports = ctx.accounts.my_account.to_account_info().lamports();
 ```
 
 you can
 
-```rs
+```rust
 let lamports = ctx.accounts.my_account.get_lamports();
 ```
 
@@ -195,13 +195,13 @@ data.
 Before this release, `ctx.bumps` used to be a `BTreeMap<String, u8>` which
 doesn't provide type safety for the keys(account names).
 
-```rs
+```rust
 let bump = *ctx.bumps.get("my_account").unwrap();
 ```
 
 With this release, there is an auto-generated struct that holds the bump values.
 
-```rs
+```rust
 let bump = ctx.bumps.my_account;
 ```
 
@@ -257,7 +257,7 @@ idl-build = [
 
 Anchor IDL now supports type aliases.
 
-```rs
+```rust
 pub type U8Array = [u8; 8];
 
 #[program]
@@ -329,7 +329,7 @@ anchor-spl = { version = "0.29.0", features = ["metadata"] }
 
 and use the exported crate from `anchor-spl`:
 
-```rs
+```rust
 use anchor_spl::metadata::mpl_token_metadata;
 ```
 

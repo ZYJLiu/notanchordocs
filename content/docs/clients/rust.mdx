@@ -21,7 +21,7 @@ The program has two instructions:
 - `initialize` – Creates and initializes a counter account to store a value
 - `increment` – Increments the value stored on the counter account
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 
 declare_id!("6khKp4BeJpCjBY1Eh39ybiqbfRnrn2UzWeUARjQLXYRC");
@@ -168,7 +168,7 @@ Below is the `src/main.rs` file for interacting with the program:
    - Sending transactions
    - Fetching program accounts
 
-```rs title="src/main.rs"
+```rust title="src/main.rs"
 use anchor_client::{
     solana_client::rpc_client::RpcClient,
     solana_sdk::{

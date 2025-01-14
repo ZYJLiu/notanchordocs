@@ -22,6 +22,7 @@ const config = {
   },
   async redirects() {
     return [
+      // Redirect root to /docs, can remove if a landing page is added
       {
         source: '/',
         destination: '/docs',

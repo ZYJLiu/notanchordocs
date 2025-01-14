@@ -66,7 +66,7 @@ instructions.
 
 <Tabs items={["Callee Program", "IDL"]}>
 
-```rs tab="Callee Program"
+```rust tab="Callee Program"
 use anchor_lang::prelude::*;
 
 declare_id!("8HupNBr7SBhBLcBsLhbtes3tCarBm6Bvpqp5AfVjHuj8");
@@ -218,7 +218,7 @@ instructions defined in the callee program above.
 
 <Tabs items={["Caller Program", "Test"]}>
 
-```rs tab="Caller Program"
+```rust tab="Caller Program"
 use anchor_lang::prelude::*;
 
 declare_id!("GENmb1D59wqCKRwujq4PJ8461EccQ5srLHrXyXp4HMTH");
@@ -350,7 +350,7 @@ describe("example", () => {
 The `declare_program!()` macro takes a single argument - the name of the
 program's IDL file (e.g. `example.json`):
 
-```rs
+```rust
 declare_program!(example);  // Looks for /idls/example.json
 ```
 
@@ -360,7 +360,7 @@ declare_program!(example);  // Looks for /idls/example.json
 
 Bring into scope the generated modules:
 
-```rs
+```rust
 use example::{
     accounts::Counter, // Account types
     cpi::{             // Cross program invocation helpers
@@ -377,7 +377,7 @@ use example::{
 
 Use the imported types in the account validation structs:
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct IncrementCpi<'info> {
     // Counter type from accounts module
@@ -399,7 +399,7 @@ pub struct IncrementCpi<'info> {
 
 Use the CPI module to invoke the program's instructions:
 
-```rs
+```rust
 pub fn initialize_cpi(ctx: Context<InitializeCpi>) -> Result<()> {
     // Create CPI context for initialize
     let cpi_ctx = CpiContext::new(
@@ -418,7 +418,7 @@ pub fn initialize_cpi(ctx: Context<InitializeCpi>) -> Result<()> {
 }
 ```
 
-```rs
+```rust
 pub fn increment_cpi(ctx: Context<IncrementCpi>) -> Result<()> {
     // Create CPI context for increment
     let cpi_ctx = CpiContext::new(
@@ -463,7 +463,7 @@ module to build the program's instructions.
 
 <Tabs items={["Callee Program", "IDL"]}>
 
-```rs tab="Callee Program"
+```rust tab="Callee Program"
 use anchor_lang::prelude::*;
 
 declare_id!("6khKp4BeJpCjBY1Eh39ybiqbfRnrn2UzWeUARjQLXYRC");
@@ -587,7 +587,7 @@ generate a Client module to build the program's instructions.
 
 <Tabs items={["Client Script", "Dependencies"]}>
 
-```rs tab="Client Script"
+```rust tab="Client Script"
 use anchor_client::{
     solana_client::rpc_client::RpcClient,
     solana_sdk::{
@@ -693,7 +693,7 @@ tokio = { version = "1.0", features = ["full"] }
 The `declare_program!()` macro takes a single argument - the name of the
 program's IDL file (e.g. `example.json`):
 
-```rs
+```rust
 declare_program!(example);  // Looks for /idls/example.json
 ```
 
@@ -703,7 +703,7 @@ declare_program!(example);  // Looks for /idls/example.json
 
 Bring into scope the generated modules:
 
-```rs
+```rust
 use example::{
   accounts::Counter,  // Program Account types
   client::accounts,   // Accounts for program instructions
@@ -717,7 +717,7 @@ use example::{
 
 Use the Client module to build the program's instructions:
 
-```rs
+```rust
 // Build initialize instruction
 let initialize_ix = program
     .request()
@@ -733,7 +733,7 @@ let initialize_ix = program
     .remove(0);
 ```
 
-```rs
+```rust
 // Build increment instruction
 let increment_ix = program
     .request()
@@ -752,7 +752,7 @@ let increment_ix = program
 
 Add the program's instructions to a transaction and send the transaction:
 
-```rs
+```rust
 let signature = program
     .request()
     .instruction(initialize_ix)
@@ -768,7 +768,7 @@ let signature = program
 
 Use the Account module to fetch and deserialize the program's account types:
 
-```rs
+```rust
 // Counter type from accounts module
 let counter_account: Counter = program.account::<Counter>(counter.pubkey()).await?;
 ```

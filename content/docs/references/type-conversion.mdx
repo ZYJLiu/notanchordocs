@@ -3,257 +3,70 @@ title: Rust to JS Type Conversion
 description: Reference for how Anchor converts between Rust and TypeScript types
 ---
 
-<table>
-<thead>
-  <tr>
-    <th>Type</th>
-    <th>Rust</th>
-    <th>TypeScript</th>
-    <th>Example</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>Boolean</td>
-    <td>
+This reference shows to converts between Rust and TypeScript types.
 
-```rust
-bool
-```
+## Primitive Types
 
-   </td>
-    <td>
+### Boolean
 
-```typescript
-boolean;
-```
+| Rust   | TypeScript | Example |
+| ------ | ---------- | ------- |
+| `bool` | `boolean`  | `true`  |
 
-   </td>
-    <td>
+### Numbers
 
-```typescript
-true;
-```
+| Rust                    | TypeScript  | Example             |
+| ----------------------- | ----------- | ------------------- |
+| `u8/u16/u32/i8/i16/i32` | `number`    | `99`                |
+| `u64/u128/i64/i128`     | `anchor.BN` | `new anchor.BN(99)` |
+| `f32/f64`               | `number`    | `1.0`               |
 
-   </td>
-  </tr>
+### Strings
 
-  <tr>
-    <td>Integer</td>
-    <td>
+| Rust     | TypeScript | Example   |
+| -------- | ---------- | --------- |
+| `String` | `string`   | `"hello"` |
 
-```rust
-u8/u16/u32/i8/i16/i32
-```
+## Collections
 
-   </td>
-    <td>
+### Arrays and Vectors
 
-```typescript
-number;
-```
+| Rust                   | TypeScript | Example     |
+| ---------------------- | ---------- | ----------- |
+| `[T; N]` (fixed array) | `Array<T>` | `[1, 2, 3]` |
+| `Vec<T>` (vector)      | `Array<T>` | `[1, 2, 3]` |
 
-   </td>
-    <td>
+### Optional Values
 
-```typescript
-99;
-```
+| Rust        | TypeScript               | Example                       |
+| ----------- | ------------------------ | ----------------------------- |
+| `Option<T>` | `T \| null \| undefined` | `null` (None)<br/>`42` (Some) |
 
-   </td>
-  </tr>
+## Complex Types
 
-  <tr>
-    <td>Big integer</td>
-    <td>
+### Structs
 
-```rust
-u64/u128/i64/i128
-```
-
-   </td>
-    <td>
-
-```typescript
-anchor.BN;
-```
-
-   </td>
-    <td>
-
-```typescript
-new anchor.BN(99);
-```
-
-   </td>
-  </tr>
-
-  <tr>
-    <td>Float</td>
-    <td>
-
-```rust
-f32/f64
-```
-
-   </td>
-    <td>
-
-```typescript
-number;
-```
-
-   </td>
-    <td>
-
-```typescript
-1.0;
-```
-
-   </td>
-  </tr>
-
-  <tr>
-    <td>String</td>
-    <td>
-
-```rust
-String
-```
-
-   </td>
-    <td>
-
-```typescript
-string;
-```
-
-   </td>
-    <td>
-
-```typescript
-"hello";
-```
-
-   </td>
-  </tr>
-
-  <tr>
-    <td>Array</td>
-    <td>
-
-```rust
-[T; N]
-```
-
-   </td>
-    <td>
-
-```typescript
-Array<T>;
-```
-
-   </td>
-    <td>
-
-```typescript
-[1, 2, 3];
-```
-
-   </td>
-  </tr>
-
-  <tr>
-    <td>Vector</td>
-    <td>
-
-```rust
-Vec<T>
-```
-
-   </td>
-    <td>
-
-```typescript
-Array<T>;
-```
-
-   </td>
-    <td>
-
-```typescript
-[1, 2, 3];
-```
-
-   </td>
-  </tr>
-
-  <tr>
-    <td>Option</td>
-    <td>
-
-```rust
-Option<T>
-```
-
-   </td>
-    <td>
-
-```typescript
-T | null | undefined;
-```
-
-   </td>
-    <td>
-      None:
-
-```typescript
-null;
-```
-
-      Some(val):
-
-```typescript
-42;
-```
-
-   </td>
-  </tr>
-
-  <tr>
-    <td>Struct</td>
-    <td>
-
-```rust
+```rust title="Rust"
+// Rust
 struct MyStruct {
     val: u16,
 }
 ```
 
-   </td>
-    <td>
+```typescript title="TypeScript"
+// TypeScript
+type MyStruct = {
+  val: number;
+};
 
-```typescript
-object;
+// Example
+const instance = { val: 99 };
 ```
 
-   </td>
-    <td>
+### Enums
 
-```typescript
-{
-  val: 99;
-}
-```
-
-   </td>
-  </tr>
-
-  <tr>
-    <td>Enum</td>
-    <td>
-
-```rust
+```rust title="Rust"
+// Rust
 enum MyEnum {
     One,
     Two { val: u32 },
@@ -261,43 +74,25 @@ enum MyEnum {
 }
 ```
 
-   </td>
-    <td>
+```typescript title="TypeScript"
+// TypeScript Representations
+// Unit variant
+const one = { one: {} };
 
-```typescript
-object;
+// Named variant
+const two = {
+  two: { val: 99 },
+};
+
+// Tuple variant
+const three = {
+  three: [12, -34],
+};
 ```
 
-   </td>
-    <td>
-      Unit variant:
+## Notes
 
-```typescript
-{
-  one: {
-  }
-}
-```
-
-      Named variant:
-
-```typescript
-{
-  two: {
-    val: 99;
-  }
-}
-```
-
-      Unnamed (tuple) variant:
-
-```typescript
-{
-  three: [12, -34];
-}
-```
-
-   </td>
-  </tr>
-</tbody>
-</table>
+- Rust integers (`u8` through `i32`) map to JavaScript `number`
+- Larger integers (`u64` and above) use Anchor's `BN` type for precision
+- Rust's `Option<T>` maps to TypeScript's union type with `null`/`undefined`
+- Structs and enums become JavaScript objects

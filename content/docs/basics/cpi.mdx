@@ -24,7 +24,7 @@ The `lib.rs` file includes a single `sol_transfer` instruction. When the
 `sol_transfer` instruction on the Anchor program is invoked, the program
 internally invokes the transfer instruction of the System Program.
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 use anchor_lang::system_program::{transfer, Transfer};
 
@@ -198,7 +198,7 @@ transfer(cpi_context, amount)?;
 
 This example shows a different approach to implementing a CPI using the `invoke`
 function and
-[`system_instruction::transfer`](https://github.com/solana-labs/solana/blob/v1.18.26/sdk/program/src/system_instruction.rs#L881-L891),
+[`system_instruction::transfer`](https://github.com/anza-xyz/agave/blob/v1.18.26/sdk/program/src/system_instruction.rs#L881-L891),
 which is generally seen in native Rust programs.
 
 Under the hood, the previous example is an abstraction of this implementation.
@@ -542,7 +542,7 @@ that are derived from their program ID.
 
 Under the hood, the previous example is a wrapper around the `invoke_signed()`
 function which uses
-[`system_instruction::transfer`](https://github.com/solana-labs/solana/blob/v1.18.26/sdk/program/src/system_instruction.rs#L881-L891)
+[`system_instruction::transfer`](https://github.com/anza-xyz/agave/blob/v1.18.26/sdk/program/src/system_instruction.rs#L881-L891)
 to build the instruction.
 
 This example shows how to use the `invoke_signed()` function to make a CPI

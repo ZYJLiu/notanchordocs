@@ -9,15 +9,15 @@ description:
 
 Transferring tokens involves moving tokens from one token account to another
 token account that share the same mint. This is done by invoking the
-[`transfer_checked`](https://github.com/solana-labs/solana-program-library/blob/master/token/program/src/instruction.rs#L1235-L1265)
+[`transfer_checked`](https://github.com/solana-program/token/blob/main/program/src/instruction.rs#L1235-L1265)
 instruction on a token program. Only the address specified as the owner
 (authority) of the source token account can transfer tokens out of the account.
 
 <Callout type="info">
   The [Token
-  Program](https://github.com/solana-labs/solana-program-library/blob/master/token/program/src/processor.rs#L229-L343)
+  Program](https://github.com/solana-program/token/blob/main/program/src/processor.rs#L229-L343)
   and [Token Extension
-  Program](https://github.com/solana-labs/solana-program-library/blob/master/token/program-2022/src/processor.rs#L290-L561)
+  Program](https://github.com/solana-program/token-2022/blob/main/program/src/processor.rs#L290-L561)
   share similar implementations to achieve the same functionality.
 </Callout>
 
@@ -47,7 +47,7 @@ Token Program or Token Extension Program. This function requires:
 2. The `amount` of tokens to transfer, in base units of the token adjusted by
    decimals. (e.g. if the mint has 2 decimals, amount of 100 = 1 token)
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{self, TokenAccount, TokenInterface, TransferChecked};
 
@@ -68,6 +68,7 @@ pub mod token_example {
         };
         let cpi_program = ctx.accounts.token_program.to_account_info();
         let cpi_context = CpiContext::new(cpi_program, cpi_accounts);
+        // [!code highlight]
         token_interface::transfer_checked(cpi_context, amount, decimals)?;
         Ok(())
     }
@@ -89,7 +90,7 @@ pub struct TransferTokens<'info> {
 
 At minimum, the following accounts are required:
 
-```rs title="snippet"
+```rust title="snippet"
 #[derive(Accounts)]
 pub struct TransferTokens<'info> {
     // The source token account owner
@@ -114,7 +115,7 @@ Within the instruction logic, use the:
 - `TransferChecked` struct to specify the required accounts
 - `token_interface::transfer_checked` function to make the CPI
 
-```rs title="snippet"
+```rust title="snippet"
 pub fn transfer_tokens(ctx: Context<TransferTokens>, amount: u64) -> Result<()> {
     // Get the number of decimals for this mint
     let decimals = ctx.accounts.mint.decimals;
@@ -150,7 +151,7 @@ defined within the program.
 <Tabs items={["Program", "Client"]}>
 <Tab value="Program">
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
@@ -347,7 +348,7 @@ Address (PDA). The PDA is derived using the seed `b"token"`. This means the
 program itself controls token transfers out of the token account through this
 PDA.
 
-```rs title="snippet"
+```rust title="snippet"
 #[derive(Accounts)]
 pub struct CreateAndMintTokens<'info> {
     #[account(mut)]
@@ -366,6 +367,8 @@ pub struct CreateAndMintTokens<'info> {
         init,
         payer = signer,
         token::mint = mint,
+        // [!code word:token_account]
+        // [!code highlight]
         token::authority = token_account,
         seeds = [b"token"],
         bump
@@ -380,8 +383,10 @@ To transfer tokens, the program must "sign" with the PDA by including the seeds
 and bump in the CPI context. This is done by passing the seeds and bump to the
 `with_signer` method when creating the CPI context.
 
-```rs title="snippet"
+```rust title="snippet"
 pub fn transfer_tokens(ctx: Context<TransferTokens>) -> Result<()> {
+    // [!code word:signer_seeds]
+    // [!code highlight]
     let signer_seeds: &[&[&[u8]]] = &[&[b"token", &[ctx.bumps.sender_token_account]]];
 
     let amount = ctx.accounts.sender_token_account.amount;
@@ -394,6 +399,7 @@ pub fn transfer_tokens(ctx: Context<TransferTokens>) -> Result<()> {
         authority: ctx.accounts.sender_token_account.to_account_info(),
     };
     let cpi_program = ctx.accounts.token_program.to_account_info();
+    // [!code highlight:2]
     let cpi_context = CpiContext::new(cpi_program, cpi_accounts).with_signer(signer_seeds);
     token_interface::transfer_checked(cpi_context, amount, decimals)?;
     Ok(())

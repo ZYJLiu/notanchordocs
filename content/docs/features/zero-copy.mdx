@@ -26,7 +26,7 @@ anchor-lang = "0.30.1"
 To define an account type that uses zero-copy, annotate the struct with
 [`#[account(zero_copy)]`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/attribute/account/src/lib.rs#L319).
 
-```rs
+```rust
 // [!code highlight]
 #[account(zero_copy)]
 pub struct Data {
@@ -38,7 +38,7 @@ pub struct Data {
 The `#[account(zero_copy)]` attribute automatically implements several traits
 required for zero-copy deserialization:
 
-```rs
+```rust
 // [!code highlight:4]
 #[derive(Copy, Clone)]
 #[derive(bytemuck::Zeroable)]
@@ -58,7 +58,7 @@ attribute.
 
 For example:
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct InstructionAccounts<'info> {
     // [!code word:AccountLoader]
@@ -72,7 +72,7 @@ pub struct InstructionAccounts<'info> {
 The `init` constraint can be used with the `AccountLoader` type to create a
 zero-copy account.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(
@@ -101,7 +101,7 @@ When initializing a zero-copy account for the first time, use
 to get a mutable reference to the account data. The `load_init` method also sets
 the account discriminator.
 
-```rs
+```rust
 pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
     // [!code word:load_init]
     // [!code highlight]
@@ -116,7 +116,7 @@ For accounts that require more than 10240 bytes, use the
 constraint instead of `init`. The `zero` constraint verifies the account has not
 been initialized by checking that its discriminator has not been set.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     // [!code word:zero]
@@ -135,7 +135,7 @@ Just as before, use `load_init` to get a mutable reference to the account data
 and set the account discriminator. Since 8 bytes are reserved for the account
 discriminator, the maximum data size is 10_485_752 bytes (10MB - 8 bytes).
 
-```rs
+```rust
 pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
     // [!code word:load_init]
     // [!code highlight]
@@ -151,7 +151,7 @@ Use
 [`load_mut`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/src/accounts/account_loader.rs#L170-L190)
 when you need mutable access to update an existing zero-copy account:
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct Update<'info> {
     // [!code highlight]
@@ -160,7 +160,7 @@ pub struct Update<'info> {
 }
 ```
 
-```rs
+```rust
 pub fn update(ctx: Context<Update>) -> Result<()> {
     // [!code word:load_mut]
     // [!code highlight]
@@ -176,14 +176,14 @@ Use
 [`load`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/src/accounts/account_loader.rs#L153-L167)
 to only read the account data.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct ReadOnly<'info> {
     pub data_account: AccountLoader<'info, Data>,
 }
 ```
 
-```rs
+```rust
 pub fn read_only(ctx: Context<ReadOnly>) -> Result<()> {
     // [!code word:load]
     // [!code highlight]
@@ -207,7 +207,7 @@ accounts in Anchor:
 <Tabs items={["Program", "Client"]}>
 <Tab value="Program">
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 
 declare_id!("8B7XpDXjPWodpDUWDSzv4q9k73jB5WdNQXZxNBj1hqw1");
@@ -316,7 +316,7 @@ are reserved for the account discriminator.
 <Tabs items={["Program", "Client"]}>
 <Tab value="Program">
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 
 declare_id!("CZgWhy3FYPFgKE5v9atSGaiQzbSB7cM38ofwX1XxeCFH");

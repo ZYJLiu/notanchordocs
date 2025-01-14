@@ -150,14 +150,14 @@ For now, we'll only cover the high-level overview of the program code:
 - The `declare_id!` macro specifies the on-chain address of your program. It
   will be automatically updated when we build the program in the next step.
 
-  ```rs
+  ```rust
   declare_id!("11111111111111111111111111111111");
   ```
 
 - The `#[program]` attribute annotates a module containing functions that
   represent the program's instructions.
 
-  ```rs
+  ```rust
   #[program]
   mod hello_anchor {
       use super::*;
@@ -187,7 +187,7 @@ For now, we'll only cover the high-level overview of the program code:
   are used by Anchor to automatically handle common security checks related to
   account validation.
 
-  ```rs
+  ```rust
   #[derive(Accounts)]
   pub struct Initialize<'info> {
       #[account(init, payer = signer, space = 8 + 8)]
@@ -201,7 +201,7 @@ For now, we'll only cover the high-level overview of the program code:
 - The `#[account]` attribute is used to annotate a struct that represents the
   data structure of an account created and owned by the program.
 
-  ```rs
+  ```rust
   #[account]
   pub struct NewAccount {
     data: u64

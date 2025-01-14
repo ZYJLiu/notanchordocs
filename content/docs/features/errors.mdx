@@ -7,7 +7,7 @@ All instruction handlers in Anchor programs return a custom `Result<T>` type
 that allows you to handle successful execution with `Ok(T)` and error cases with
 `Err(Error)`.
 
-```rs
+```rust
 // [!code word:Result]
 pub fn custom_instruction(ctx: Context<CustomInstruction>) -> Result<()> {
     // --snip--
@@ -21,7 +21,7 @@ type in Anchor programs is a type alias that wraps the standard Rust
 `Result<T, E>`. In this case, `T` represents the successful return type, while
 `E` is Anchor's custom `Error` type.
 
-```rs
+```rust
 pub type Result<T> = std::result::Result<T, error::Error>;
 ```
 
@@ -31,7 +31,7 @@ When an error occurs in an Anchor program, it returns a custom
 [`Error`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/src/error.rs#L277-L281)
 type defined as:
 
-```rs
+```rust
 #[derive(Debug, PartialEq, Eq)]
 pub enum Error {
     AnchorError(Box<AnchorError>),
@@ -46,7 +46,7 @@ The `Error` type in Anchor programs can be one of two variants:
    [`ProgramError`](https://github.com/anza-xyz/agave/blob/v1.18.26/sdk/program/src/program_error.rs#L12-L66)
    type. These errors come from the `solana_program` crate.
 
-```rs
+```rust
 #[derive(Debug)]
 pub struct ProgramErrorWithOrigin {
     pub program_error: ProgramError,
@@ -58,7 +58,7 @@ pub struct ProgramErrorWithOrigin {
 2. [`AnchorError`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/src/error.rs#L490-L497):
    Errors defined by the Anchor framework.
 
-```rs
+```rust
 #[derive(Debug)]
 pub struct AnchorError {
     pub error_name: String,
@@ -104,7 +104,7 @@ When you define an enum with the `error_code` attribute, Anchor automatically:
 - Generates the necessary boilerplate for error handling
 - Enables the use of custom error messages via the `msg` attribute
 
-```rs
+```rust
 #[error_code]
 pub enum MyError {
     #[msg("My custom error message")]
@@ -123,7 +123,7 @@ your program. Under the hood, `err!` uses the `error!` macro to construct
 `AnchorError`. The implementation can be found
 [here](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/attribute/error/src/lib.rs#L84-L116).
 
-```rs
+```rust
 #[program]
 mod hello_anchor {
     use super::*;
@@ -201,7 +201,7 @@ an acceptable range, showing how to:
 <Tabs items={["Program", "Client"]}>
 <Tab value="Program">
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 
 declare_id!("9oECKMeeyf1fWNPKzyrB2x1AbLjHDFjs139kEyFwBpoV");

@@ -8,10 +8,10 @@ description:
 
 ## What is a Mint Account?
 
-A mint account is an account type in Solana's Token Programs that represents a
-token on the network and stores global metadata about the token.
+A mint account is an account type in Solana's Token Programs that uniquely
+represents a token on the network and stores global metadata about the token.
 
-```rs
+```rust
 /// Mint data.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -34,9 +34,9 @@ pub struct Mint {
 
 <Callout type="info">
   Note that both the [Token
-  Program](https://github.com/solana-labs/solana-program-library/blob/master/token/program/src/state.rs#L18-L32)
+  Program](https://github.com/solana-program/token/blob/main/program/src/state.rs#L18-L32)
   and [Token Extension
-  Program](https://github.com/solana-labs/solana-program-library/blob/master/token/program-2022/src/state.rs#L30-L43)
+  Program](https://github.com/solana-program/token-2022/blob/main/program/src/state.rs#L30-L43)
   have the same base implementation for the Mint account.
 </Callout>
 
@@ -45,8 +45,8 @@ mint account acts as its unique identifier on the network.
 
 For example, the USDC stablecoin on Solana is identified by the mint address
 `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`. This mint address serves as
-USDC's unique identifier across the entire Solana ecosystem You can view details
-about this mint account on
+USDC's unique identifier across the entire Solana ecosystem. You can view
+details about this mint account on
 [Solana Explorer](https://explorer.solana.com/address/3emsAVdmGKERbHjmGfQ6oZ1e35dkf5iYcS6U4CPKFVaa).
 
 ## Usage
@@ -56,7 +56,8 @@ both the Token Program and Token Extension Program. This module provides types
 for working with both token programs, allowing you to write code that's
 compatible with either program.
 
-```rs title="snippet"
+```rust title="snippet"
+// [!code highlight]
 use anchor_spl::token_interface::{Mint, TokenInterface};
 
 // --snip--
@@ -72,7 +73,11 @@ pub struct CreateMint<'info> {
         mint::authority = signer.key(),
         mint::freeze_authority = signer.key(),
     )]
+    // [!code word:Mint]
+    // [!code highlight]
     pub mint: InterfaceAccount<'info, Mint>,
+    // [!code word:TokenInterface]
+    // [!code highlight]
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }
@@ -80,16 +85,17 @@ pub struct CreateMint<'info> {
 
 ### Account Types
 
-The `InterfaceAccount` type is a wrapper that allows the account to work with
-both the Token Program and Token Extension Program. When used with the `Mint`
-type, it enables the field to accept a mint account from either program.
+The
+[`InterfaceAccount`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/src/accounts/interface_account.rs#L160-L165)
+type is a wrapper that accepts accounts from either the Token Program and Token
+Extension Program.
 
 The `Mint` type represents the base Mint data structure shared by both token
 programs. When an account of this type is passed in, Anchor will automatically
 deserialize the account data into the mint struct, regardless of which token
 program created it.
 
-```rs title="Account Type"
+```rust title="Account Type"
 pub mint: InterfaceAccount<'info, Mint>,
 ```
 
@@ -106,7 +112,7 @@ initialize a new mint account:
 | `mint::authority`        | Sets the mint authority - the account that has permission to mint new tokens. (Required)                                                                                                                                                           |
 | `mint::freeze_authority` | Sets the freeze authority - the account that has permission to freeze token accounts. (Optional) Freezing a token account prevents the token program from processing instructions that include the frozen token account (ex. transfer, burn, etc.) |
 
-```rs title="Account Constraints"
+```rust title="Account Constraints"
 #[account(
     init,
     payer = <payer>,
@@ -122,7 +128,7 @@ account where the address of the account is a Program Derived Address (PDA). The
 benefit of using a PDA is that the mint address can be derived from the same
 seeds at any time.
 
-```rs title="Account Constraints"
+```rust title="Account Constraints"
 #[account(
     init,
     payer = <payer>,
@@ -156,6 +162,8 @@ program using two different approaches:
    deterministic mint addresses and is useful when you need to find the mint
    address at a later time.
 
+Both approaches are can be done entirely using account constraints.
+
 ### Create Mint using Keypair
 
 Create a new mint account in using a generated Keypair.
@@ -163,7 +171,7 @@ Create a new mint account in using a generated Keypair.
 <Tabs items={["Program", "Client"]}>
 <Tab value="Program">
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenInterface};
 
@@ -184,6 +192,7 @@ pub struct CreateMint<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
     #[account(
+        // [!code highlight:5]
         init,
         payer = signer,
         mint::decimals = 6,
@@ -246,7 +255,7 @@ of the mint account.
 <Tabs items={["Program", "Client"]}>
 <Tab value="Program">
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenInterface};
 
@@ -267,6 +276,9 @@ pub struct CreateMint<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
     #[account(
+        // [!code word:seeds]
+        // [!code word:bump]
+        // [!code highlight:7]
         init,
         payer = signer,
         mint::decimals = 6,

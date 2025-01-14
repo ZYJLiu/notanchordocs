@@ -54,7 +54,7 @@ convenience, see [`idl convert` command](#idl-convert-command).
 
 Some seed expressions such as `&(my_account.data + 1).to_le_bytes()`:
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct SeedMathExpr<'info> {
     #[account(seeds = [&(my_account.data + 1).to_le_bytes()], bump)]
@@ -79,7 +79,7 @@ get automatically resolved by clients.
 
 Using field expressions as an address constraint e.g.
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(address = my_account.authority)]
@@ -99,7 +99,7 @@ However, accounts that use the `address` constraint with non-constant values do
 not currently resolve automatically. For this reason, you might want to consider
 using the `has_one` constraint instead:
 
-```rs
+```rust
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     pub authority: UncheckedAccount<'info>,
@@ -249,13 +249,13 @@ has
 [`pubkey!`](https://docs.rs/solana-program/1.18.17/solana_program/macro.pubkey.html)
 to easily declare public keys:
 
-```rs
+```rust
 let key = pubkey!("11111111111111111111111111111111");
 ```
 
 which is more convenient than `Pubkey::from_str`:
 
-```rs
+```rust
 use std::str::FromStr;
 let key = Pubkey::from_str("11111111111111111111111111111111").unwrap();
 ```
@@ -291,7 +291,7 @@ has been improved.
 
 You can now propagate integer conversion errors with `?`:
 
-```rs
+```rust
 let n: i32 = u32::MAX.try_into()?;
 ```
 
@@ -329,7 +329,7 @@ from your `accounts` call.
 
 Using defined types (structs, enums, or type aliases) as a generic argument e.g.
 
-```rs
+```rust
 param: GenericStruct<MyStruct>,
 ```
 

@@ -13,7 +13,7 @@ information about an individual's ownership of a specific token (mint). Each
 token account is associated with a single mint and tracks details like the token
 balance and owner.
 
-```rs
+```rust
 /// Account data.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -44,16 +44,16 @@ pub struct Account {
 <Callout type="info">
   Note that in the source code, a Token account is referred to as an `Account`
   type. Both the [Token
-  Program](https://github.com/solana-labs/solana-program-library/blob/master/token/program/src/state.rs#L89-L110)
+  Program](https://github.com/solana-program/token/blob/main/program/src/state.rs#L89-L110)
   and [Token Extension
-  Program](https://github.com/solana-labs/solana-program-library/blob/master/token/program-2022/src/state.rs#L104-L124)
+  Program](https://github.com/solana-program/token-2022/blob/main/program/src/state.rs#L104-L124)
   have the same base implementation for the Token account.
 </Callout>
 
 To hold tokens for a specific mint, users must first create a token account.
 Each token account is associated with:
 
-1. A specific mint (the token type it can hold)
+1. A specific mint (the token type the token account holds units of)
 2. An owner (the authority who can transfer tokens from the account)
 
 Let's look at an example using USDC on Solana:
@@ -65,7 +65,7 @@ Let's look at an example using USDC on Solana:
 - Circle is set as the owner at `7VHUFJHWu2CuExkJcJrzhQPJ2oygupTWkL2A2For4BmE`
   and can transfer these tokens
 
-You can view details about this token account on
+You can view the details of this token account on
 [Solana Explorer](https://explorer.solana.com/address/3emsAVdmGKERbHjmGfQ6oZ1e35dkf5iYcS6U4CPKFVaa).
 
 <Callout type="info">
@@ -91,8 +91,8 @@ can spend the tokens, not the program that owns the account.
 ## What is an Associated Token Account?
 
 An associated token account (ATA) is simply a token account with an address that
-is a PDA derived and created by the
-[Associated Token Program](https://github.com/solana-labs/solana-program-library/tree/master/associated-token-account/program).
+is a PDA derived from and created by the
+[Associated Token Program](https://github.com/solana-program/associated-token-account/tree/main/program).
 You can think of an ATA as the default token account for a user to hold units of
 a specific token (mint).
 
@@ -103,9 +103,9 @@ a specific token (mint).
 
 ATAs provide a deterministic way to find a user's token account for any given
 mint. You can inspect the implementation of the derivation
-[here](https://github.com/solana-labs/solana-program-library/blob/master/associated-token-account/client/src/address.rs#L62-L69).
+[here](https://github.com/solana-program/associated-token-account/blob/main/interface/src/address.rs#L56-L70).
 
-```rs title="Associated Token Account Address Derivation"
+```rust title="Associated Token Account Address Derivation"
 pub fn get_associated_token_address_and_bump_seed_internal(
     wallet_address: &Pubkey,
     token_mint_address: &Pubkey,
@@ -133,10 +133,10 @@ mint, eliminating the need to track token account addresses separately.
   accounts with deterministic addresses (PDAs). When creating an associated
   token account, the Associated Token Program makes a CPI (Cross-Program
   Invocation) to either the Token Program or Token Extension Program. The
-  created account is owned by and has the same `Account` type structure as
-  defined in the token program. The Associated Token Program itself maintains no
-  state - it simply provides a standardized way to create token accounts at a
-  deterministic address.
+  created account is owned by the token program and has the same `Account` type
+  structure as defined in the token program. The Associated Token Program itself
+  maintains no state - it simply provides a standardized way to create token
+  accounts at a deterministic address.
 </Callout>
 
 ## Usage
@@ -145,7 +145,8 @@ Use the `token_interface` and `associated_token` modules from the `anchor-spl`
 crate to work with ATAs compatible with either the Token Program and Token
 Extension Program.
 
-```rs title="snippet"
+```rust title="snippet"
+// [!code highlight:2]
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
@@ -162,6 +163,7 @@ pub struct CreateTokenAccount<'info> {
         associated_token::authority = signer,
         associated_token::token_program = token_program,
     )]
+    // [!code highlight:4]
     pub token_account: InterfaceAccount<'info, TokenAccount>,
     pub mint: InterfaceAccount<'info, Mint>,
     pub token_program: Interface<'info, TokenInterface>,
@@ -174,7 +176,7 @@ To create token accounts with PDAs derived from your program, you can use the
 `token::mint`, `token::authority`, and `token::token_program` constraints along
 with the `seeds` and `bump` constraints.
 
-```rs title="snippet"
+```rust title="snippet"
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
 // --snip--
@@ -184,6 +186,9 @@ pub struct CreateTokenAccount<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
     #[account(
+        // [!code word:seeds]
+        // [!code word:bump]
+        // [!code highlight:7]
         init_if_needed,
         payer = signer,
         token::mint = mint,
@@ -201,17 +206,17 @@ pub struct CreateTokenAccount<'info> {
 
 ### Account Types
 
-The `InterfaceAccount` type is a wrapper that allows the account to work with
-both the Token Program and Token Extension Program. When used with the
-`TokenAccount` type, it enables the field to accept a token account from either
-program.
+The
+[`InterfaceAccount`](https://github.com/coral-xyz/anchor/blob/v0.30.1/lang/src/accounts/interface_account.rs#L160-L165)
+type is a wrapper that allows the account to work with both the Token Program
+and Token Extension Program.
 
 The `TokenAccount` type represents the base `Account` data structure shared by
 both token programs. When an account of this type is passed in, Anchor will
 automatically deserialize the account data into the `Account` struct, regardless
 of which token program created it.
 
-```rs title="Account Type"
+```rust title="Account Type"
 pub token_account: InterfaceAccount<'info, TokenAccount>,
 ```
 
@@ -223,13 +228,13 @@ Anchor provides two sets of constraints for working with token accounts:
   (ATAs)
 - Use `token` constraints when working with token accounts that are not
   specifically ATAs, such as custom PDAs or token accounts with addresses that
-  are public keys from a standard keypair
+  are public keys from a keypair
 
-The appropriate constraint set depends on your specific use case - ATAs are
-recommended for user wallets, while custom token accounts are useful for
-program-controlled accounts.
+The appropriate constraint to use depends on your specific use case. ATAs are
+recommended for user wallets, while custom token accounts are useful for program
+controlled accounts.
 
-#### `associated_token`
+#### `associated_token` constraints
 
 The following account constraints are used in combination to create and
 initialize a new associated token account:
@@ -243,7 +248,7 @@ initialize a new associated token account:
 | `associated_token::authority`     | Sets the authority (owner) of the token account who has permission to transfer or burn tokens.                                                                                                            |
 | `associated_token::token_program` | Specifies which token program (Token Program or Token Extension Program) to use when creating the token account.                                                                                          |
 
-```rs title="Create Associated Token Account"
+```rust title="Create Associated Token Account"
 #[account(
     init,
     payer = <payer>,
@@ -254,7 +259,7 @@ initialize a new associated token account:
 pub token_account: InterfaceAccount<'info, TokenAccount>,
 ```
 
-#### `token`
+#### `token` constraints
 
 The following account constraints are used in combination to create and
 initialize a new token account:
@@ -268,7 +273,7 @@ initialize a new token account:
 | `token::authority`     | Sets the authority (owner) of the token account who has permission to transfer or burn tokens.                                                                                                            |
 | `token::token_program` | Specifies which token program (Token Program or Token Extension Program) to use when creating the token account.                                                                                          |
 
-```rs title="Create Token Account with Keypair Public Key as Address"
+```rust title="Create Token Account with Keypair Public Key as Address"
 #[account(
     init,
     payer = <payer>,
@@ -279,7 +284,7 @@ initialize a new token account:
 pub token_account: InterfaceAccount<'info, TokenAccount>,
 ```
 
-```rs title="Create Token Account with PDA as Address"
+```rust title="Create Token Account with PDA as Address"
 #[account(
     init,
     payer = <payer>,
@@ -322,6 +327,8 @@ program using two different approaches:
    (owner) as a PDA to enable your program to transfer tokens from the token
    account.
 
+Both approaches are can be done entirely using account constraints.
+
 ### Create Associated Token Account
 
 Create an associated token account for a user.
@@ -329,7 +336,7 @@ Create an associated token account for a user.
 <Tabs items={["Program", "Client"]}>
 <Tab value="Program">
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
@@ -377,6 +384,7 @@ pub struct CreateTokenAccount<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
     #[account(
+        // [!code highlight:5]
         init_if_needed,
         payer = signer,
         associated_token::mint = mint,
@@ -474,7 +482,7 @@ the token account.
 <Tabs items={["Program", "Client"]}>
 <Tab value="Program">
 
-```rs title="lib.rs"
+```rust title="lib.rs"
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
@@ -521,6 +529,7 @@ pub struct CreateTokenAccount<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
     #[account(
+        // [!code highlight:7]
         init_if_needed,
         payer = signer,
         token::mint = mint,

@@ -74,7 +74,7 @@ Depending on other crates who used different versions of Anchor is not the best
 experience, to say the least. To solve this problem, program clients can now be
 generated from their IDL using the new `declare_program!` macro:
 
-```rs
+```rust
 declare_program!(program_name);
 ```
 
@@ -140,7 +140,7 @@ Current supported values are:
 - `spl_transfer_hook_interface::initialize_extra_account_meta_list`
 - `spl_transfer_hook_interface::execute`
 
-```rs
+```rust
 mod my_hook_program {
     #[interface(spl_transfer_hook_interface::initialize_extra_account_meta_list)]
     pub fn initialize(ctx: Context<Initialize>, metas: Vec<AnchorExtraAccountMeta>) -> Result<()> {

@@ -7,8 +7,6 @@ description:
 
 This reference tells you how much space you should allocate for an account.
 
----
-
 This only applies to accounts that don't use `zero-copy`. `zero-copy` uses
 `repr(C)` with a pointer cast, so there the `C` layout applies.
 
@@ -44,7 +42,9 @@ pub struct MyData {
     pub players: Vec<Pubkey> // we want to support up to 10 players
 }
 
+
 impl MyData {
+    // [!code highlight]
     pub const MAX_SIZE: usize = 2 + (1 + 32) + (4 + 10 * 32);
 }
 
@@ -58,6 +58,7 @@ pub enum GameState {
 #[derive(Accounts)]
 pub struct InitializeMyData<'info> {
     // Note that we have to add 8 to the space for the internal anchor
+    // [!code highlight]
     #[account(init, payer = signer, space = 8 + MyData::MAX_SIZE)]
     pub acc: Account<'info, MyData>,
     pub signer: Signer<'info>,
@@ -74,6 +75,8 @@ Here's an example:
 
 ```rust
 #[account]
+// [!code word:InitSpace]
+// [!code highlight]
 #[derive(InitSpace)]
 pub struct ExampleAccount {
     pub data: u64,
@@ -88,6 +91,8 @@ pub struct Initialize<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub system_program: Program<'info, System>,
+    // [!code word:INIT_SPACE]
+    // [!code highlight]
     #[account(init, payer = payer, space = 8 + ExampleAccount::INIT_SPACE)]
     pub data: Account<'info, ExampleAccount>,
 }
