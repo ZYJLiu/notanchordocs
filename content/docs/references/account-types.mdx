@@ -15,6 +15,20 @@ Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/mai
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/Account)
 
+```rust title="snippet"
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word: Account]
+    // [!code highlight]
+    pub account: Account<'info, CustomAccountType>,
+}
+
+#[account]
+pub struct CustomAccountType {
+    data: u64,
+}
+```
+
 ### `AccountInfo<'info>`
 
 Description: AccountInfo can be used as a type but Unchecked Account should be
@@ -23,6 +37,16 @@ Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/mai
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/AccountInfo)
 
+```rust title="snippet"
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    /// CHECK: AccountInfo is an unchecked account
+    // [!code word:AccountInfo]
+    // [!code highlight]
+    pub unchecked_account: AccountInfo<'info>,
+}
+```
+
 ### `AccountLoader<'info, T>`
 
 Description: Type facilitating on demand zero copy deserialization  
@@ -30,12 +54,35 @@ Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/mai
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/AccountLoader)
 
+```rust title="snippet"
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word:AccountLoader]
+    // [!code highlight]
+    pub account: AccountLoader<'info, ZeroCopyAccountType>,
+}
+
+#[account(zero_copy)]
+pub struct ZeroCopyAccountType {
+    data: u64,
+}
+```
+
 ### `Box<Account<'info, T>>`
 
 Description: Box type to save stack space  
 Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/main/account-types/Box)
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/Box)
+
+```rust title="snippet"
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word:Box]
+    // [!code highlight]
+    pub account: Box<Account<'info, AccountType>>,
+}
+```
 
 ### `Interface<'info, T>`
 
@@ -45,12 +92,38 @@ Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/mai
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/Interface)
 
+```rust title="snippet"
+// Token program or Token2022 program
+use anchor_spl::token_interface::TokenInterface;
+
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word: Interface]
+    // [!code highlight]
+    pub program: Interface<'info, TokenInterface>,
+}
+```
+
 ### `InterfaceAccount<'info, T>`
 
 Description: Account container that checks ownership on deserialization  
 Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/main/account-types/InterfaceAccount)
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/InterfaceAccount)
+
+```rust title="snippet"
+// Token program or Token2022 program Mint/TokenAccount
+use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
+
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word:InterfaceAccount]
+    // [!code highlight:2]
+    pub mint: InterfaceAccount<'info, Mint>,
+    pub token: InterfaceAccount<'info, TokenAccount>,
+    pub program: Interface<'info, TokenInterface>,
+}
+```
 
 ### `Option<Account<'info, T>>`
 
@@ -59,12 +132,33 @@ Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/mai
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/Option)
 
+```rust title="snippet"
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word:Option]
+    // [!code highlight]
+    pub account: Option<Account<'info, AccountType>>,
+}
+```
+
 ### `Program<'info, T>`
 
 Description: Type validating that the account is the given Program  
 Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/main/account-types/Program)
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/Program)
+
+```rust title="snippet"
+use anchor_spl::token::Token;
+
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word:Program]
+    // [!code highlight:2]
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+}
+```
 
 ### `Signer<'info>`
 
@@ -73,12 +167,30 @@ Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/mai
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/Signer)
 
+```rust title="snippet"
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word:Signer]
+    // [!code highlight]
+    pub signer: Signer<'info>,
+}
+```
+
 ### `SystemAccount<'info>`
 
 Description: Type validating that the account is owned by the system program  
 Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/main/account-types/SystemAccount)
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/SystemAccount)
+
+```rust title="snippet"
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word:SystemAccount]
+    // [!code highlight]
+    pub account: SystemAccount<'info>,
+}
+```
 
 ### `Sysvar<'info, T>`
 
@@ -87,6 +199,16 @@ Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/mai
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/Sysvar)
 
+```rust title="snippet"
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word:Sysvar]
+    // [!code highlight:2]
+    pub rent: Sysvar<'info, Rent>,
+    pub clock: Sysvar<'info, Clock>,
+}
+```
+
 ### `UncheckedAccount<'info>`
 
 Description: Explicit wrapper for AccountInfo types to emphasize that no checks
@@ -94,3 +216,13 @@ are performed
 Examples: [Github](https://github.com/solana-developers/anchor-examples/tree/main/account-types/UncheckedAccount)
 |
 [Solpg](https://beta.solpg.io/https://github.com/solana-developers/anchor-examples/tree/main/account-types/UncheckedAccount)
+
+```rust title="snippet"
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // CHECK: No checks are performed
+    // [!code word:UncheckedAccount]
+    // [!code highlight]
+    pub account: UncheckedAccount<'info>,
+}
+```

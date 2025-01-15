@@ -56,7 +56,7 @@ case-sensitive manner exactly as the folder name, usually in kebab-case.
 
 The `AccountTypeName` is the name of the account struct, usually in PascalCase.
 
-The `account_pubkey` refers to the Pubkey of the account to deserialise, in
+The `account_pubkey` refers to the Pubkey of the account to deserialize, in
 Base58.
 
 Example Usage:
@@ -316,14 +316,6 @@ If you'd prefer to run the program against your local validator use
 
 When running tests we stream program logs to
 `.anchor/program-logs/<address>.<program-name>.log`
-
-<Callout title="Note">
-  The Anchor workflow
-  [recommends](https://www.parity.io/paritys-checklist-for-secure-smart-contract-development/)
-  to test your program using integration tests in a language other than Rust to
-  make sure that bugs related to syntax misunderstandings are coverable with
-  tests and not just replicated in tests.
-</Callout>
 
 ## Upgrade
 
